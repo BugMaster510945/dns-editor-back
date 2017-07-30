@@ -1,0 +1,33 @@
+<?
+
+function guidv4()
+{
+	$data = openssl_random_pseudo_bytes(16);
+    assert(strlen($data) == 16);
+
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+function getPOST()
+{
+	$data = file_get_contents('php://input');
+
+	$data = json_decode($data, true);
+
+	$_POST = null;
+	if( json_last_error() == JSON_ERROR_NONE )
+		$_POST = $data;
+
+	if( is_null($_POST) )
+		$_POST = array();
+}
+
+function sendJSON($data)
+{
+	Header('Content-Type: application/json; charset=utf-8');
+	print json_encode($data);
+}
+

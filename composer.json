@@ -1,0 +1,31 @@
+{
+    "name": "webmaster/named.planchon.org",
+    "authors": [
+        {
+            "name": "WebMaster",
+            "email": "webmaster@planchon.org"
+        }
+    ],
+    "require": {
+        "lcobucci/jwt": "^3.2",
+        "vrana/notorm": "dev-master",
+        "BugMaster510945/netdns2": "dev-master"
+    },
+	"repositories": [
+	{
+		"type":"package",
+		"package": {
+			"name": "bugmaster510945/netdns2",
+			"version":"master",
+			"source": {
+				"url": "https://github.com/BugMaster510945/netdns2.git",
+				"type": "git",
+				"reference":"myprod"
+			},
+			"autoload": {
+				"psr-0": { "Net_DNS2": "" }
+			}
+		}
+	}
+	]
+}
