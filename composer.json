@@ -9,7 +9,8 @@
     "require": {
         "lcobucci/jwt": "^3.2",
         "vrana/notorm": "dev-master",
-        "BugMaster510945/netdns2": "dev-master"
+        "BugMaster510945/netdns2": "dev-master",
+        "zircote/swagger-php": "^2.0"
     },
 	"repositories": [
 	{

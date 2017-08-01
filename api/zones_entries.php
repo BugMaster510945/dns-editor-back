@@ -22,6 +22,6 @@ $reponse=$zone::sortEntries($zone->getFilteredEntries());
 //Zones::getZone()
 //$reponse = array('status' => 200, 'detail' => Zones::getListZones($data) );
 
-sendJSON( $reponse );
+sendJSON( array('entries' => $reponse) );
 
 return true;

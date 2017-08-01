@@ -2,9 +2,22 @@
 
 $MAPPER = new URLMapper();
 
+/**
+ * @SWG\Swagger(
+ *   host=URL_BASE,
+ *   basePath="/api/",
+ *   @SWG\Info(
+ *     title="DNS Editor Backend API",
+ *     version="1.0.0"
+ *   )
+ * )
+ */
+
 #$UUID_Regex = '[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}';
 # Unauthenticated page
 #$MAPPER->addMapping('@^(?:/('.$UUID_Regex.')(?:/('.$UUID_Regex.'))?)?/sms/send$@', PATH_BASE.'/pages/smssend.php');
+
+$MAPPER->addMapping('@^/api/docs.json$@', PATH_BASE.'/api/docs.php');
 
 # Managing Session & Credential
 $MAPPER->addMapping('@^/api/authenticate$@', PATH_BASE.'/api/login.php', 'POST');
