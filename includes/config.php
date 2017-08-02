@@ -33,6 +33,7 @@ else
 }
 
 $default_globals = array(
+	'VERSION' => '1.0.0',
 	'DEFAULT_THEME' => 'default',
 	'TITLE' => 'Bind',
 	'JWT_SESSION_GRACETIME' => 300, // 5 minutes

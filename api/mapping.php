@@ -2,31 +2,24 @@
 
 $MAPPER = new URLMapper();
 
-/**
- * @SWG\Swagger(
- *   host=URL_BASE,
- *   basePath="/api/",
- *   @SWG\Info(
- *     title="DNS Editor Backend API",
- *     version="1.0.0"
- *   )
- * )
- */
 
 #$UUID_Regex = '[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}';
 # Unauthenticated page
 #$MAPPER->addMapping('@^(?:/('.$UUID_Regex.')(?:/('.$UUID_Regex.'))?)?/sms/send$@', PATH_BASE.'/pages/smssend.php');
 
-$MAPPER->addMapping('@^/api/docs.json$@', PATH_BASE.'/api/docs.php');
+
+define('URL_API_BASE_PATH', URL_PATH_BASE.'api/v'.explode('.', VERSION)[0]);
+
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/docs.json$@', PATH_BASE.'/api/docs.php');
 
 # Managing Session & Credential
-$MAPPER->addMapping('@^/api/authenticate$@', PATH_BASE.'/api/login.php', 'POST');
-$MAPPER->addMapping('@^/api/logout$@', PATH_BASE.'/api/logout.php');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/authenticate$@', PATH_BASE.'/api/login.php', 'POST');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/logout$@', PATH_BASE.'/api/logout.php');
 $MAPPER->addMapping('@^@', PATH_BASE.'/api/checkAuth.php');
 
 # Authenticated page
-$MAPPER->addMapping('@^/api/zones$@', PATH_BASE.'/api/zones.php');
-$MAPPER->addMapping('@^/api/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_entries.php');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones$@', PATH_BASE.'/api/zones.php');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_entries.php');
 
 #$MAPPER->addMapping('@^/system/(?:users/)?(?:list)?$@', PATH_BASE.'/pages/system.users.r.php');
 #$MAPPER->addMapping('@^/system/(?:users/)?create$@', PATH_BASE.'/pages/system.users.c.php');

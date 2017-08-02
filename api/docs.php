@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * @SWG\Swagger(
+ *   schemes={ HTTP_SCHEME },
+ *   host=HTTP_HOST,
+ *   basePath=URL_API_BASE_PATH,
+ *   @SWG\Info(
+ *     title="DNS Editor Backend API",
+ *     version=VERSION,
+ *     description="Backend d'edition de zones DNS",
+ *     @SWG\Contact(
+ *       name="Frédéric Planchon",
+ *       email="github@planchon.org",
+ *       url="http://www.planchon.org"
+ *     )
+ *   )
+ * )
+ */
+
+$url = parse_url(URL_BASE.URL_API_BASE_PATH);
+define('HTTP_HOST', $url['host']. (isset($parsed_url['port']) ? ':' . $parsed_url['port'] : ''));
+define('HTTP_SCHEME', $url['scheme']);
+unset($url);
+
 $doCache = defined('CACHE_DIR') && is_dir(CACHE_DIR);
 
 $need_extract = true;
