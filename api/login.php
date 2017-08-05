@@ -1,5 +1,29 @@
 <?php
 
+/**
+ * @SWG\Post(
+ *   path="/authenticate",
+ *   summary="Genere un token nécessaire au requetages de l'API",
+ *   tags={ "Authentication" },
+ *   @SWG\Parameter(
+ *     name="user",
+ *     in="body",
+ *     description="Nom d'utilisateur",
+ *     required=true,
+ *     @SWG\Schema(
+ *       type="object",
+ *       @SWG\Property(
+ *         property="user",
+ *         type="string"
+ *       )
+ *     )
+ *   ),
+ *   @SWG\Response(
+ *     response=200,
+ *     description="desc"
+ *   )
+ * )
+ */
 getPOST();
 
 if( array_key_exists('user', $_POST) &&

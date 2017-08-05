@@ -5,6 +5,8 @@
  *   schemes={ HTTP_SCHEME },
  *   host=HTTP_HOST,
  *   basePath=URL_API_BASE_PATH,
+ *   consumes={ "application/json" },
+ *   produces={ "application/json" },
  *   @SWG\Info(
  *     title="DNS Editor Backend API",
  *     version=VERSION,
@@ -24,6 +26,48 @@ define('HTTP_SCHEME', $url['scheme']);
 unset($url);
 
 $doCache = defined('CACHE_DIR') && is_dir(CACHE_DIR);
+
+$stack = array( PATH_BASE );
+$exclude = array('vendor', 'old', 'dns-editor-front', 'named-zone', 'netdns2');
+
+$files = array();
+$last_modif = 0;
+
+while( count($stack) > 0 )
+{
+	$path = array_pop($stack);
+
+	if( $dh = opendir($path) )
+	{
+		while (false !== ($entry = readdir($dh)))
+		{
+			if( $entry == '.' || $entry == '..' )
+				continue;
+
+			if( in_array($entry, $exclude) )
+				continue;
+
+			$fullpath = $path.DIRECTORY_SEPARATOR.$entry;
+			if( is_dir($fullpath) )
+			{
+				$stack[] = $fullpath;
+				continue;
+			}
+
+			$extension = strtolower(pathinfo($fullpath, PATHINFO_EXTENSION));
+			if( $extension !== 'php' )
+				continue;
+
+			$files[] = $fullpath;
+			$last_modif = max($last_modif, @filemtime($fullpath));
+        }
+		closedir($dh);
+    }
+}
+var_dump($files);
+
+exit;
+
 
 $need_extract = true;
 
