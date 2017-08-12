@@ -10,7 +10,7 @@
  *   @SWG\Info(
  *     title="DNS Editor Backend API",
  *     version=VERSION,
- *     description="Backend d'edition de zones DNS",
+ *     description="API to edit DNS Zones",
  *     @SWG\Contact(
  *       name="Frédéric Planchon",
  *       email="github@planchon.org",
@@ -19,6 +19,27 @@
  *   )
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *   definition="simpleApiResponse",
+ *   type="object",
+ *   @SWG\Property(
+ *     property="info",
+ *     description="Simple message about operation",
+ *     type="string"
+ *   ),
+ *   @SWG\Property(
+ *     property="detail",
+ *     description="Detailled information about opertation",
+ *     type="string"
+ *   )
+ * )
+ */
+
+#Header('Access-Control-Allow-Origin: *');
+#Header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, PATCH, OPTIONS');
+#Header('Access-Control-Allow-Headers: Content-Type, api_key, Authorization');
 
 $url = parse_url(URL_BASE.URL_API_BASE_PATH);
 define('HTTP_HOST', $url['host']. (isset($parsed_url['port']) ? ':' . $parsed_url['port'] : ''));

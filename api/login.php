@@ -2,28 +2,45 @@
 
 /**
  * @SWG\Post(
- *   path="/authenticate",
- *   summary="Genere un token nécessaire au requetages de l'API",
- *   tags={ "Authentication" },
+ *   path="/login",
+ *   summary="Logs user into the system",
+ *   tags={ "users" },
  *   @SWG\Parameter(
- *     name="user",
+ *     name="body",
  *     in="body",
- *     description="Nom d'utilisateur",
  *     required=true,
  *     @SWG\Schema(
  *       type="object",
  *       @SWG\Property(
  *         property="user",
+ *         description="The user name for login",
+ *         type="string"
+ *       ),
+ *       @SWG\Property(
+ *         property="password",
+ *         description="The password for login in clear text",
  *         type="string"
  *       )
  *     )
  *   ),
  *   @SWG\Response(
- *     response=200,
- *     description="desc"
+ *     response=201,
+ *     description="successful operation",
+ *     @SWG\Schema(ref="#/definitions/simpleApiResponse"),
+ *     @SWG\Header(
+ *       header="Token",
+ *       type="string",
+ *       description="Credentials to request system"
+ *     )
+ *   ),
+ *   @SWG\Response(
+ *     response=401,
+ *     description="authorization required",
+ *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
  *   )
  * )
  */
+
 getPOST();
 
 if( array_key_exists('user', $_POST) &&
