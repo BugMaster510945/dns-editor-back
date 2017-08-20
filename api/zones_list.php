@@ -5,17 +5,14 @@
  *   path="/zones",
  *   summary="Retrieve zone list",
  *   tags={ "zones" },
- *   @SWG\Parameter(
- *     name="Authorization",
- *     in="header",
- *     required=true,
- *     type="string",
- *     description="token access"
- *   ),
+ *   security={{"token":{}}},
  *   @SWG\Response(
  *     response=200,
  *     description="successful operation",
- *     @SWG\Schema(ref="#/definitions/zoneList"),
+ *     @SWG\Schema(
+ *       type="array",
+ *       @SWG\Items(ref="#/definitions/zone")
+ *     ),
  *     @SWG\Header(
  *       header="Token",
  *       type="string",

@@ -1,7 +1,55 @@
 <?php
 
+/**
+ * @SWG\Definition(
+ *   definition="zone",
+ *   type="object"
+ * )
+ */
+
 class Zones
 {
+	protected $id;
+
+	/**
+	 * @SWG\Property(
+	 *   type="string",
+	 *   readOnly=true,
+	 *   description="Zone name"
+	 * )
+	 */
+	protected $name;
+
+	/**
+	 * @SWG\Property(
+	 *   type="boolean",
+	 *   readOnly=true,
+	 *   default=false,
+	 *   description="Read rights"
+	 * )
+	 */
+	protected $read;
+
+	/**
+	 * @SWG\Property(
+	 *   type="boolean",
+	 *   readOnly=true,
+	 *   default=false,
+	 *   description="Write rights"
+	 * )
+	 */
+	protected $write;
+
+	public static function getSOAEmail($rname)
+	{
+		return preg_replace('/\\\./', '.', preg_replace('/(?<!\\\)\./', '@', $rname, 1));
+	}
+
+	public static function getSOArname($email)
+	{
+		return preg_replace('/@/', '.', preg_replace('/\.(.*@.+)/', '\\.\1', $email));
+	}
+
 	public static function sortEntries($entries)
 	{
 		function compareDNSName($a, $b)
@@ -39,30 +87,6 @@ class Zones
 		return $entries;
 	}
 
-	/**
-	 * @SWG\Definition(
-	 *   definition="zoneList",
-	 *   type="array",
-	 *   @SWG\Items(
-	 *     type="object",
-	 *     @SWG\Property(
-	 *       property="name",
-	 *       description="Zone name",
-	 *       type="string"
-	 *     ),
-	 *     @SWG\Property(
-	 *       property="read",
-	 *       type="boolean",
-	 *       default=false
-	 *     ),
-	 *     @SWG\Property(
-	 *       property="write",
-	 *       type="boolean",
-	 *       default=false
-	 *     )
-	 *   )
-	 * )
-	 */
 	public static function getListZones($user)
 	{
 		global $appDb;
@@ -97,11 +121,6 @@ class Zones
 
 		return null;
 	}
-
-	protected $id;
-	protected $name;
-	protected $read;
-	protected $write;
 
 	protected function __construct($name, $user=null)
 	{
@@ -169,139 +188,168 @@ class Zones
 
 	/**
 	 * @SWG\Definition(
-	 *   definition="zoneEntriesObject",
+	 *   definition="zoneEntry",
 	 *   type="object",
 	 *   @SWG\Property(
 	 *     property="name",
-	 *     description="Zone name",
-	 *     readOnly=true,
-	 *     type="string"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="master",
-	 *     description="Primary Master",
-	 *     readOnly=true,
-	 *     type="string"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="responsible",
-	 *     description="Maintainer email",
+	 *     description="entry name",
 	 *     type="string",
-	 *     format="email"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="serial",
-	 *     description="Zone serial number",
-	 *     readOnly=true,
-	 *     type="integer",
-	 *     format="int32"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="refresh",
-	 *     description="Zone refresh",
-	 *     type="integer",
-	 *     format="int32"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="retry",
-	 *     description="Zone retry",
-	 *     type="integer",
-	 *     format="int32"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="expire",
-	 *     description="Zone expire",
-	 *     type="integer",
-	 *     format="int32"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="minimum",
-	 *     description="Zone minimum",
-	 *     type="integer",
-	 *     format="int32"
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="secured",
-	 *     type="object",
-	 *     readOnly=true,
-	 *     @SWG\Property(
-	 *       property="zsk",
-	 *       description="zsk tagid",
-	 *       type="array",
-	 *       @SWG\Items(
-	 *         type="integer",
-	 *         format="int32"
-	 *       )
-	 *     ),
-	 *     @SWG\Property(
-	 *       property="ksk",
-	 *       description="ksk tagid",
-	 *       type="array",
-	 *       @SWG\Items(
-	 *         type="integer",
-	 *         format="int32"
-	 *       )
-	 *     ),
-	 *     @SWG\Property(
-	 *       property="nsec3param",
-	 *       type="object",
-	 *       @SWG\Property(
-	 *         property="salt",
-	 *         description="NSEC3 Salt",
-	 *         type="string"
-	 *       ),
-	 *       @SWG\Property(
-	 *         property="iterations",
-	 *         description="NSEC3 iterations",
-	 *         type="integer",
-	 *         format="int32"
-	 *       )
-	 *     )
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="entries",
-	 *     type="array",
-	 *     @SWG\Items(
-	 *       type="object",
-	 *       @SWG\Property(
-	 *         property="name",
-	 *         description="entry name",
-	 *         type="string"
-	 *       ),
-	 *       @SWG\Property(
-	 *         property="ttl",
-	 *         description="entry ttl",
-	 *         type="integer",
-	 *         format="int32"
-	 *       ),
-	 *       @SWG\Property(
-	 *         property="type",
-	 *         description="entry type",
-	 *         type="string"
-	 *       ),
-	 *       @SWG\Property(
-	 *         property="data",
-	 *         description="entry data",
-	 *         type="string"
-	 *       )
-	 *     )
-	 *   ),
-	 *   @SWG\Property(
-	 *     property="read",
-	 *     description="Read rights",
-	 *     type="boolean",
-	 *     default=false,
 	 *     readOnly=true
 	 *   ),
 	 *   @SWG\Property(
-	 *     property="write",
-	 *     description="Write rights",
-	 *     type="boolean",
-	 *     default=false,
-	 *     readOnly=true
+	 *     property="ttl",
+	 *     description="entry ttl",
+	 *     type="integer",
+	 *     format="int32"
+	 *   ),
+	 *   @SWG\Property(
+	 *     property="type",
+	 *     description="entry type",
+	 *     type="string"
+	 *   ),
+	 *   @SWG\Property(
+	 *     property="data",
+	 *     description="entry data",
+	 *     type="string"
 	 *   )
 	 * )
 	 */
+
+	/**
+	 * @SWG\Definition(
+	 *   definition="zoneSOA",
+	 *   type="object",
+	 *   allOf={
+	 *     @SWG\Schema(ref="#/definitions/zone"),
+	 *     @SWG\Schema(
+	 *       @SWG\Property(
+	 *         property="master",
+	 *         description="Primary Master",
+	 *         readOnly=true,
+	 *         type="string"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="responsible",
+	 *         description="Maintainer email",
+	 *         type="string",
+	 *         format="email"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="serial",
+	 *         description="Zone serial number",
+	 *         readOnly=true,
+	 *         type="integer",
+	 *         format="int32"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="refresh",
+	 *         description="Zone refresh",
+	 *         type="integer",
+	 *         format="int32"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="retry",
+	 *         description="Zone retry",
+	 *         type="integer",
+	 *         format="int32"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="expire",
+	 *         description="Zone expire",
+	 *         type="integer",
+	 *         format="int32"
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="minimum",
+	 *         description="Zone minimum",
+	 *         type="integer",
+	 *         format="int32"
+	 *       )
+	 *     )
+	 *   }
+	 * )
+	 */
+
+	/**
+	 * @SWG\Definition(
+	 *   definition="zoneEntries",
+	 *   type="object",
+	 *   allOf={
+	 *     @SWG\Schema(ref="#/definitions/zoneSOA"),
+	 *     @SWG\Schema(
+	 *       @SWG\Property(
+	 *         property="secured",
+	 *         type="object",
+	 *         readOnly=true,
+	 *         @SWG\Property(
+	 *           property="zsk",
+	 *           description="zsk tagid",
+	 *           type="array",
+	 *           @SWG\Items(
+	 *             type="integer",
+	 *             format="int32"
+	 *           )
+	 *         ),
+	 *         @SWG\Property(
+	 *           property="ksk",
+	 *           description="ksk tagid",
+	 *           type="array",
+	 *           @SWG\Items(
+	 *             type="integer",
+	 *             format="int32"
+	 *           )
+	 *         ),
+	 *         @SWG\Property(
+	 *           property="nsec3param",
+	 *           type="object",
+	 *           @SWG\Property(
+	 *             property="salt",
+	 *             description="NSEC3 Salt",
+	 *             type="string"
+	 *           ),
+	 *           @SWG\Property(
+	 *             property="iterations",
+	 *             description="NSEC3 iterations",
+	 *             type="integer",
+	 *             format="int32"
+	 *           )
+	 *         )
+	 *       ),
+	 *       @SWG\Property(
+	 *         property="entries",
+	 *         type="array",
+	 *         @SWG\Items(ref="#/definitions/zoneEntry")
+	 *       )
+	 *     )
+	 *   }
+	 * )
+	 */
+	public function getSOAObject()
+	{
+		$soa = null;
+
+		$soa = $this->getSOA();
+		if( is_null($soa) )
+			return null;
+
+		$retour = array(
+			'name' => $this->name,
+			'master' => $soa->mname,
+			'responsible' => Zones::getSOAEmail( $soa->rname ),
+			'serial' => $soa->serial,
+			//'timing' => array(
+				'refresh' => $soa->refresh,
+				'retry' => $soa->retry,
+				'expire' => $soa->expire,
+				'minimum' => $soa->minimum,
+			//),
+			'read' => $this->read,
+			'write' => $this->write
+		);
+
+		return $retour;
+	}
+
 	public function getZoneEntriesObject($filterExclude=array('SOA','DNSKEY','RRSIG','NSEC','NSEC3','NSEC3PARAM','TYPE65534'))
 	{
 		$exclude = array();
@@ -338,7 +386,7 @@ class Zones
 		$retour = array(
 			'name' => $this->name,
 			'master' => $soa->mname,
-			'responsible' => preg_replace('/\./', '@', $soa->rname, 1),
+			'responsible' => Zones::getSOAEmail( $soa->rname ),
 			'serial' => $soa->serial,
 			//'timing' => array(
 				'refresh' => $soa->refresh,
@@ -385,4 +433,50 @@ class Zones
 		return $retour;
 	}
 
+	public function getSOA()
+	{
+		global $appDb;
+
+		$retour = null;
+
+		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
+		$data = $data->fetch();
+
+		$resolv = new Net_DNS2_Resolver(array('nameservers' => array($data['host'])));
+		$resolv->signTSIG($data['name'], $data['secret'], $data['algorithm']);
+
+		try {
+			$retour = $resolv->query($this->name, 'SOA');
+			$retour = $retour->answer[0];
+		} catch(Net_DNS2_Exception $e) {
+		}
+
+		return ($retour instanceof Net_DNS2_RR_SOA) ? $retour : null;
+	}
+
+	public function setSOA($soa)
+	{
+		global $appDb;
+
+		if( !($soa instanceof Net_DNS2_RR_SOA) )
+			return array(false, null);
+
+		$retour = true;
+		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
+		$data = $data->fetch();
+
+		$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
+		$retour = $retour && $updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
+
+		$msg = null;
+		try {
+			$retour = $retour && $updater->add( $soa );
+			$retour = $retour && $updater->update();
+		} catch(Net_DNS2_Exception $e) {
+			$retour = false;
+			$msg = $e->getMessage();
+		}
+
+		return array($retour, $msg);
+	}
 }

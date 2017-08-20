@@ -31,3 +31,23 @@ function sendJSON($data)
 	print json_encode($data);
 }
 
+function filter_var_array_errors($input, $filter_args, &$errors, &$bad_parameter, $prefix = '')
+{
+	$output = filter_var_array($input, $filter_args, true);
+
+	foreach($output as $key => $value)
+	{
+		$bad_parameter = $bad_parameter || ($value === false);
+		if( $value === false )
+		{
+			if( $filter_args[$key]['filter'] == FILTER_VALIDATE_EMAIL )
+				$errors[] = sprintf(_('Field %s: must be a valid email address'), $prefix.$key);
+			if( $filter_args[$key]['filter'] == FILTER_VALIDATE_INT )
+				$errors[] = sprintf(_('Field %s: must be an integer between %d and %d'), $prefix.$key, $filter_args[$key]['options']['min_range'], $filter_args[$key]['options']['max_range']);
+			if( $filter_args[$key]['filter'] == FILTER_VALIDATE_REGEXP )
+				$errors[] = sprintf(_('Field %s: must match regex "%s"'), $prefix.$key, $filter_args[$key]['options']['regexp']);
+		}
+	}
+	return $output;
+}
+

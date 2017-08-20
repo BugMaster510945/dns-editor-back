@@ -25,3 +25,16 @@ require_once(PATH_BASE.'/classes/Zones.php');
 
 require_once(PATH_BASE.'/includes/checkAuth.php');
 require_once(PATH_BASE.'/api/mapping.php');
+
+if( defined('SENTRY_URL') )
+{
+	$appSentry = new Raven_Client(SENTRY_URL,
+		array(
+			'release' => VERSION,
+			'prefixes' => array(PATH_BASE),
+		)
+	);
+	$appSentry->install();
+}
+
+

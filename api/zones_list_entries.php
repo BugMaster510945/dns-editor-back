@@ -5,13 +5,7 @@
  *   path="/zones/{name}/entries",
  *   summary="Retrieve zone entries",
  *   tags={ "zones" },
- *   @SWG\Parameter(
- *     name="Authorization",
- *     in="header",
- *     required=true,
- *     type="string",
- *     description="token access"
- *   ),
+ *   security={{"token":{}}},
  *   @SWG\Parameter(
  *     name="name",
  *     in="path",
@@ -22,7 +16,7 @@
  *   @SWG\Response(
  *     response=200,
  *     description="successful operation",
- *     @SWG\Schema(ref="#/definitions/zoneEntriesObject"),
+ *     @SWG\Schema(ref="#/definitions/zoneEntries"),
  *     @SWG\Header(
  *       header="Token",
  *       type="string",

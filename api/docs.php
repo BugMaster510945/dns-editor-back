@@ -16,6 +16,12 @@
  *       email="github@planchon.org",
  *       url="http://www.planchon.org"
  *     )
+ *   ),
+ *   @SWG\SecurityScheme(
+ *     securityDefinition="token",
+ *     type="apiKey",
+ *     name="Authorization",
+ *     in="header"
  *   )
  * )
  */
@@ -33,6 +39,12 @@
  *     property="detail",
  *     description="Detailled information about opertation",
  *     type="string"
+ *   ),
+ *   @SWG\Property(
+ *     property="errors",
+ *     description="List of error messages",
+ *     type="array",
+ *     @SWG\Items(type="string")
  *   )
  * )
  */
@@ -40,6 +52,7 @@
 #Header('Access-Control-Allow-Origin: *');
 #Header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, PATCH, OPTIONS');
 #Header('Access-Control-Allow-Headers: Content-Type, api_key, Authorization');
+
 
 $url = parse_url(URL_BASE.URL_API_BASE_PATH);
 define('HTTP_HOST', $url['host']. (isset($parsed_url['port']) ? ':' . $parsed_url['port'] : ''));
@@ -102,6 +115,7 @@ if( is_null($swagger) )
 	$processors = \Swagger\Analysis::processors();
 
 	// Crawl directory and parse all files
+	sort($files);
 	foreach ($files as $file)
 	{
 		$analysis->addAnalysis($analyser->fromFile($file));
