@@ -3,6 +3,7 @@
 #require_once('Twig/Autoloader.php'); # Twig must be installed on system
 require_once(PATH_BASE.'/includes/errorHandler.php');
 require_once(PATH_BASE.'/includes/compatibility.php');
+require_once(PATH_BASE.'/includes/exception.php');
 require_once(PATH_BASE.'/locale/locale.php');
 require_once(PATH_BASE.'/vendor/autoload.php');
 

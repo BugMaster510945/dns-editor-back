@@ -26,7 +26,7 @@
  *   @SWG\Response(
  *     response=201,
  *     description="successful operation",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse"),
+ *     @SWG\Schema(type="object"),
  *     @SWG\Header(
  *       header="Token",
  *       type="string",
@@ -36,7 +36,7 @@
  *   @SWG\Response(
  *     response=401,
  *     description="authorization required",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   )
  * )
  */
@@ -56,10 +56,10 @@ if( array_key_exists('user', $_POST) &&
 
 		getNewToken($user);
 
-		$reponse = array('status' => 201, 'detail' => 'Created');
-		$reponse = array('info' => _('Created'), 'detail' => _('The request has been fulfilled, resulting in the creation of a new user\'s session'));
+		#$reponse = array('status' => 201, 'detail' => 'Created');
+		#$reponse = array('info' => _('Created'), 'detail' => _('The request has been fulfilled, resulting in the creation of a new user\'s session'));
 
-		sendJSON($reponse);
+		sendJSON(array());
 
 		return true;
 	}

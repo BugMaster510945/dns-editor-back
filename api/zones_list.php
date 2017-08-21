@@ -22,12 +22,12 @@
  *   @SWG\Response(
  *     response=401,
  *     description="authorization required",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response="default",
  *     description="unknown error",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   )
  * )
  */

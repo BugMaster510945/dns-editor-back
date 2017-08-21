@@ -31,13 +31,12 @@ function sendJSON($data)
 	print json_encode($data);
 }
 
-function filter_var_array_errors($input, $filter_args, &$errors, &$bad_parameter, $prefix = '')
+function filter_var_array_errors($input, $filter_args, &$errors, $add_null, $prefix = '')
 {
-	$output = filter_var_array($input, $filter_args, true);
+	$output = filter_var_array($input, $filter_args, $add_null);
 
 	foreach($output as $key => $value)
 	{
-		$bad_parameter = $bad_parameter || ($value === false);
 		if( $value === false )
 		{
 			if( $filter_args[$key]['filter'] == FILTER_VALIDATE_EMAIL )

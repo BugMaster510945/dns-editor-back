@@ -8,4 +8,11 @@ $path = '/';
 if( array_key_exists('PATH_INFO', $_SERVER) )
 	$path = $_SERVER['PATH_INFO'];
 
-$MAPPER->map($path, $_SERVER['REQUEST_METHOD']);
+try
+{
+	$MAPPER->map($path, $_SERVER['REQUEST_METHOD']);
+}
+catch( appException $e )
+{
+	$e->sendReturn();
+}

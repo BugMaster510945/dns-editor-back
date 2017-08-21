@@ -50,6 +50,16 @@ class Zones
 		return preg_replace('/@/', '.', preg_replace('/\.(.*@.+)/', '\\.\1', $email));
 	}
 
+	public static function reduceEntry($entry, $zone)
+	{
+		return ($entry === $zone)  ? '@' : preg_replace('/\.'.str_replace('.', '\\.', $zone).'$/', '', $entry);
+	}
+
+	public static function expandEntry($entry, $zone)
+	{
+		return ($entry === '@') ? $zone : $entry.'.'.$zone;
+	}
+
 	public static function sortEntries($entries)
 	{
 		function compareDNSName($a, $b)
@@ -383,6 +393,7 @@ class Zones
 		if( is_null($soa) )
 			return null;
 
+		$zone_name = $this->name;
 		$retour = array(
 			'name' => $this->name,
 			'master' => $soa->mname,
@@ -396,9 +407,9 @@ class Zones
 			//),
 			'secured' => array('zsk' => array(), 'ksk' => array() ),
 			'entries' => Zones::sortEntries(
-				array_map(function ($r) {
+				array_map(function ($r) use ($zone_name) {
 					return array(
-						'name' => $r->name,
+						'name' => Zones::reduceEntry( $r->name, $zone_name ),
 						'ttl' => $r->ttl,
 						'type' => $r->type,
 						'data' => implode(' ', array_slice(explode(' ', $r), 4))
@@ -448,35 +459,159 @@ class Zones
 		try {
 			$retour = $resolv->query($this->name, 'SOA');
 			$retour = $retour->answer[0];
-		} catch(Net_DNS2_Exception $e) {
+		}
+		catch(Net_DNS2_Exception $e)
+		{
+			throw new appException(504, $e);
 		}
 
-		return ($retour instanceof Net_DNS2_RR_SOA) ? $retour : null;
+		if( !($retour instanceof Net_DNS2_RR_SOA) )
+			throw new appException(500);
+
+		return $retour;
 	}
 
-	public function setSOA($soa)
+	public function updateSOA($new)
 	{
 		global $appDb;
 
-		if( !($soa instanceof Net_DNS2_RR_SOA) )
-			return array(false, null);
+		if( !is_array($new) )
+			throw new appException(400);
 
-		$retour = true;
+		$soa = $this->getSOA();
+
+		$soa->rname = Zones::getSOAEmail( $soa->rname );
+
+		$tmp = array();
+		# Remplit les champs de la soa avec les nouvelles valeurs définies
+		foreach(array('rname', 'refresh', 'retry', 'expire', 'minimum') as $key)
+		{
+			if( array_key_exists($key, $new) )
+				$soa->$key = $new[$key];
+			$tmp[$key] = $soa->$key;
+		}
+
+		// https://github.com/dotse/zonemaster/tree/master/docs/specifications/tests/Zone-TP
+		$filter_args = array(
+			'rname'       => array('filter' => FILTER_VALIDATE_EMAIL),
+			'refresh'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => max(14400, $tmp['retry']+1), 'max_range' => $tmp['expire'] ) ),
+			'retry'       => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 3600, 'max_range' => $tmp['refresh']-1) ),
+			'expire'      => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => max(604800, $tmp['refresh']), 'max_range' => 2147483647)),
+			'minimum'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 300, 'max_range' => 86400))
+		);
+
+		$errors = array();
+		filter_var_array_errors($tmp, $filter_args, $errors, false);
+
+		if( count($errors) != 0 )
+			throw new appException(400, $errors);
+		unset($errors); unset($tmp);
+
+		$soa->serial += 1;
+		$soa->rname = Zones::getSOArname($soa->rname);
+
 		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
 		$data = $data->fetch();
 
-		$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
-		$retour = $retour && $updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
+		try
+		{
+			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
+			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
 
-		$msg = null;
-		try {
-			$retour = $retour && $updater->add( $soa );
-			$retour = $retour && $updater->update();
-		} catch(Net_DNS2_Exception $e) {
-			$retour = false;
-			$msg = $e->getMessage();
+			$updater->add( $soa );
+			if( !$updater->update() )
+				throw new appException(500);
 		}
+		catch(Net_DNS2_Exception $e)
+		{
+			throw new appException(500, $e);
+		}
+	}
 
-		return array($retour, $msg);
+	public function getDefaultTTL()
+	{
+		$soa = $this->getSOA();
+		return $soa->minimum;
+	}
+
+	public function updateEntry($entry, $new, $old = null)
+	{
+		global $appDb;
+
+		$errors = array();
+		if( !is_array($new) )
+			throw new appException(400);
+
+		$filter_args = array(
+			'ttl'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
+			'type'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^[A-Z]+/') ),
+			'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
+		);
+		$new = filter_var_array_errors($new, $filter_args, $errors, true);
+
+		if( count($errors) != 0 )
+			throw new appException(400, $errors);
+
+		if( is_null($new['type']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
+		if( is_null($new['data']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
+
+		if( is_null($old) )
+			$old = array();
+		if( !is_array($old) )
+			throw new appException(400);
+
+		$old = filter_var_array_errors($old, $filter_args, $errors, false);
+		if( count($errors) != 0 )
+			throw new appException(400, $errors);
+
+		if( array_key_exists('type', $old) &&
+		    $old['type'] != $new['type'] )
+			throw new appException(400, array( _('DNS Type must match between old and new entry')) );
+
+		$newRR = array( Zones::expandEntry($entry, $this->name) );
+		if( is_null($new['ttl']) )
+			$newRR[] = $this->getDefaultTTL();
+		else
+			$newRR[] = $new['ttl'];
+		$newRR[] = $new['type'];
+		$newRR[] = $new['data'];
+
+
+		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
+		$data = $data->fetch();
+
+		try
+		{
+			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
+			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
+
+			$oldRR = array($newRR[0], 0); // Don't care about ttl when delete
+			if( array_key_exists('type', $old) )
+			{
+				$oldRR[] = $old['type'];
+				if( array_key_exists('data', $old) )
+				{
+					$oldRR[] = $old['data'];
+
+					$oldRR = Net_DNS2_RR::fromString(implode($oldRR, ' '));
+					$updater->delete($oldRR);
+				}
+				else
+					$updater->deleteAny($oldRR[0], $oldRR[2]);
+			}
+			else
+				$updater->deleteAll($oldRR[0]);
+
+			$newRR = Net_DNS2_RR::fromString(implode($newRR, ' '));
+			$updater->add( $newRR );
+			if( !$updater->update() )
+				throw new appException(500);
+		}
+		catch(Net_DNS2_Exception $e)
+		{
+			throw new appException(400, $e);
+		}
 	}
 }

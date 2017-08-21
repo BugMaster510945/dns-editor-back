@@ -25,7 +25,7 @@
 		}
 	}
 
-	function userErrorHandler ($errno, $errmsg, $filename, $linenum, $vars = array())
+	function userErrorHandler ($errno, $errmsg, $filename, $linenum, $vars = array(), $exit = true)
 	{
 		if (!($errno & error_reporting())) return false;
 
@@ -44,10 +44,10 @@
 		);
 
 		$response = array(
-			'info'   => 'Internal Server Error',
-			'detail' => $errortype[$errno].': '.$errmsg,
-			'file'      => $filename,
-			'line'   => $linenum
+			'message'  => 'Internal Server Error',
+			'details'  => array($errortype[$errno].': '.$errmsg),
+			'filename' => str_replace(PATH_BASE.'/', '', $filename),
+			'fileline' => $linenum
 		);
 
 		if( defined('DEBUG') && DEBUG )
@@ -58,7 +58,7 @@
 
 			foreach ($liste_global as $globalname)
 			{
-				if( array_key_exists($globalname, $vars) &&  is_array($vars[$globalname]) )
+				if( array_key_exists($globalname, $vars) && is_array($vars[$globalname]) )
 				{
 					$liste_keys=array_keys($vars[$globalname]);
 					foreach ( $liste_keys as $key_entry)
@@ -104,7 +104,7 @@
 
 		print json_encode($response);
 
-		exit;
+		if( $exit ) exit;
 	}
 
 
@@ -113,7 +113,7 @@
 		$error = error_get_last();
 
 		if( !is_null($error) && is_array($error) && in_array($error['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING) ) )
-        	userErrorHandler($error['type'], $error['message'], $error['file'], $error['line'] );
+			userErrorHandler($error['type'], $error['message'], $error['file'], $error['line'], array(), false );
 	}
 
 	set_error_handler('userErrorHandler');

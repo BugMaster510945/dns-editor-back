@@ -53,39 +53,40 @@
  *   @SWG\Response(
  *     response=400,
  *     description="missing or invalid parameter",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=401,
  *     description="authorization required",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=403,
  *     description="zone access is not allowed",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=500,
  *     description="internal error",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=504,
  *     description="zone access is not allowed by dns server",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response="default",
  *     description="unknown error",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   )
  * )
  */
 
 $bad_parameter = false;
 $errors = array();
-$bad_parameter = $bad_parameter || count($URLMapper_data) != 3;
+if( count($URLMapper_data) != 3 )
+	throw new appException(400, array( sprintf(_('Require %d parameters', 2)) ) );
 
 getPOST();
 
@@ -95,61 +96,45 @@ $filter_args = array(
 	'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
 );
 
-$bad_parameter = $bad_parameter || !array_key_exists('new', $_POST) || !is_array($_POST['new']);
-if( !$bad_parameter )
-		$_POST['new'] = filter_var_array_errors($_POST['new'], $filter_args, $errors, $bad_parameter, 'new.');
+if( !array_key_exists('new', $_POST) )
+	throw new appException(400, array( sprintf(_('Field %s: is required'), 'new') ) );
 
-$bad_parameter = $bad_parameter ||  is_null($_POST['new']['type']) || is_null($_POST['new']['data']);
-if( is_null($_POST['new']['type']) )
+if( !is_array($_POST['new']) )
+	throw new appException(400, array( sprintf(_('Field %s: must be an array'), 'new') ) );
+
+$_POST['new'] = filter_var_array_errors($_POST['new'], $filter_args, $errors, false, 'new.');
+
+if( !array_key_exists('type', $_POST['new']) )
 	$errors[] = sprintf(_('Field %s: is required'), 'new.type');
-if( is_null($_POST['new']['data']) )
-	$errors[] = sprintf(_('Field %s: is required'), 'new.ttl');
+if( !array_key_exists('data', $_POST['new']) )
+	$errors[] = sprintf(_('Field %s: is required'), 'new.data');
+
+if( array_key_exists('old', $_POST) && !is_array($_POST['old']) )
+	throw new appException(400, array( sprintf(_('Field %s: must be an array', 'old')) ) );
 
 if( array_key_exists('old', $_POST) )
-{
-	if( is_array($_POST['old']) )
-		$_POST['old'] = filter_var_array_errors($_POST['old'], $filter_args, $errors, $bad_parameter, 'old.');
-	else
-		unset($_POST['old']);
-}
+	$_POST['old'] = filter_var_array_errors($_POST['old'], $filter_args, $errors, false, 'old.');
+else
+	$_POST['old'] = null;
 
-if( $bad_parameter )
-{
-	http_response_code(400);
-	sendJSON( array('info' => _('Bad Request'), 'detail' => _('The server cannot or will not process the request due to an apparent client error'), 'errors' => $errors ) );
-	return true;
-}
+if( count($errors) != 0 )
+	throw new appException(400, $errors);
 
 $data = getTokenPrivate();
 $zone = Zones::getZone($URLMapper_data[1], $data, true);
 
 if( is_null($zone) )
-{
-	http_response_code(403);
-	sendJSON( array('info' => _('Forbidden'), 'detail' => _('The server is refusing action. The user might not have the necessary permissions for a resource') ));
-	return true;
-}
+	throw new appException(403);
 
-$dnsEntry = array('name');
-if( is_null($_POST['new']['ttl']) )
+#$newEntry = Net_DNS2_RR::fromString(implode($dnsEntry, ' '));
+
+list($ret, $msg) = $zone->updateEntry($URLMapper_data[2], $_POST['new'], $_POST['old'] );
+if( array_key_exists('old', $_POST) )
 {
-	$soa = $zone->getSOA();
-	if( is_null($soa) )
-	{
-		http_response_code(504);
-		sendJSON( array('info' => _('Gateway Time-out'), 'detail' => _('The server was acting as a gateway or proxy and did not receive a timely response from the upstream server') ));
-		return true;
-	}
-	$dnsEntry[] = $soa->minimum;
 }
 else
-	$dnsEntry[] = $_POST['new']['ttl'];
 
-$dnsEntry[] = $_POST['new']['type'];
-$dnsEntry[] = $_POST['new']['data'];
-
-Net_DNS2_RR::fromString(implode($dnsEntry, ' '));
-var_dump(implode($dnsEntry, ' '));
+var_dump($newEntry);
 exit;
 
 	if( !array_key_exists($_POST['new']['type'], Net_DNS2_Lookups::$rr_types_by_name) )

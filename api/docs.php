@@ -26,29 +26,6 @@
  * )
  */
 
-/**
- * @SWG\Definition(
- *   definition="simpleApiResponse",
- *   type="object",
- *   @SWG\Property(
- *     property="info",
- *     description="Simple message about operation",
- *     type="string"
- *   ),
- *   @SWG\Property(
- *     property="detail",
- *     description="Detailled information about opertation",
- *     type="string"
- *   ),
- *   @SWG\Property(
- *     property="errors",
- *     description="List of error messages",
- *     type="array",
- *     @SWG\Items(type="string")
- *   )
- * )
- */
-
 #Header('Access-Control-Allow-Origin: *');
 #Header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, PATCH, OPTIONS');
 #Header('Access-Control-Allow-Headers: Content-Type, api_key, Authorization');

@@ -26,41 +26,33 @@
  *   @SWG\Response(
  *     response=400,
  *     description="missing required parameter",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=401,
  *     description="authorization required",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response=403,
  *     description="zone access is not allowed",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   ),
  *   @SWG\Response(
  *     response="default",
  *     description="unknown error",
- *     @SWG\Schema(ref="#/definitions/simpleApiResponse")
+ *     @SWG\Schema(ref="#/definitions/simpleAPIError")
  *   )
  * )
  */
 if( count($URLMapper_data) != 2 )
-{
-	http_response_code(400);
-	sendJSON( array('info' => _('Bad Request'), 'detail' => _('The server cannot or will not process the request due to an apparent client error')) );
-	return true;
-}
+	throw new appException(400, array( sprintf(_('Require %d parameter', 1)) ) );
 
 $data = getTokenPrivate();
 $zone = Zones::getZone($URLMapper_data[1], $data);
 
 if( is_null($zone) )
-{
-	http_response_code(403);
-	sendJSON( array('info' => _('Forbidden'), 'detail' => _('The server is refusing action. The user might not have the necessary permissions for a resource') ));
-	return true;
-}
+	throw new appException(403);
 
 $reponse=$zone->getZoneEntriesObject();
 //$reponse=$zone::sortEntries($zone->getFilteredEntries());
