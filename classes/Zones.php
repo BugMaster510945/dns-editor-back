@@ -578,7 +578,6 @@ class Zones
 		$newRR[] = $new['type'];
 		$newRR[] = $new['data'];
 
-
 		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
 		$data = $data->fetch();
 
@@ -603,6 +602,56 @@ class Zones
 			}
 			else
 				$updater->deleteAll($oldRR[0]);
+
+			$newRR = Net_DNS2_RR::fromString(implode($newRR, ' '));
+			$updater->add( $newRR );
+			if( !$updater->update() )
+				throw new appException(500);
+		}
+		catch(Net_DNS2_Exception $e)
+		{
+			throw new appException(400, $e);
+		}
+	}
+
+	public function addEntry($entry, $new)
+	{
+		global $appDb;
+
+		$errors = array();
+		if( !is_array($new) )
+			throw new appException(400);
+
+		$filter_args = array(
+			'ttl'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
+			'type'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^[A-Z]+/') ),
+			'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
+		);
+		$new = filter_var_array_errors($new, $filter_args, $errors, true);
+
+		if( count($errors) != 0 )
+			throw new appException(400, $errors);
+
+		if( is_null($new['type']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
+		if( is_null($new['data']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
+
+		$newRR = array( Zones::expandEntry($entry, $this->name) );
+		if( is_null($new['ttl']) )
+			$newRR[] = $this->getDefaultTTL();
+		else
+			$newRR[] = $new['ttl'];
+		$newRR[] = $new['type'];
+		$newRR[] = $new['data'];
+
+		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
+		$data = $data->fetch();
+
+		try
+		{
+			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
+			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
 
 			$newRR = Net_DNS2_RR::fromString(implode($newRR, ' '));
 			$updater->add( $newRR );

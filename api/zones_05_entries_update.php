@@ -1,6 +1,5 @@
 <?php
 
-//TODO:
 /**
  * @SWG\Patch(
  *   path="/zones/{name}/entries/{entry}",
@@ -41,9 +40,8 @@
  *     ),
  *   ),
  *   @SWG\Response(
- *     response=200,
+ *     response=204,
  *     description="successful operation",
- *     @SWG\Schema(ref="#/definitions/zoneSOA"),
  *     @SWG\Header(
  *       header="Token",
  *       type="string",
@@ -126,97 +124,8 @@ $zone = Zones::getZone($URLMapper_data[1], $data, true);
 if( is_null($zone) )
 	throw new appException(403);
 
-#$newEntry = Net_DNS2_RR::fromString(implode($dnsEntry, ' '));
+$zone->updateEntry($URLMapper_data[2], $_POST['new'], $_POST['old'] );
 
-list($ret, $msg) = $zone->updateEntry($URLMapper_data[2], $_POST['new'], $_POST['old'] );
-if( array_key_exists('old', $_POST) )
-{
-}
-else
+header(204);
 
-var_dump($newEntry);
-exit;
-
-	if( !array_key_exists($_POST['new']['type'], Net_DNS2_Lookups::$rr_types_by_name) )
-	{
-		$bad_parameter = true;
-		$errors[] = sprintf(_('Field %s: %s is not a supported dns type'), 'new.key', $_POST['new']['type']);
-	}
-	else
-		$DNSClass = Net_DNS2_Lookups::$rr_types_id_to_class[
-			Net_DNS2_Lookups::$rr_types_by_name[ $_POST['new']['type'] ]
-		];
-
-if( isset($DNSClass) )
-{
-	$DNSObject = new $DNSClass;
-	#TODO: $DNSObject->name = "";
-	$DNSObject->class = 'IN'; # Hardcoded, yes but is this really hurt?, TODO: do a better job
-	$DNSObject->ttl = 3600; // TODO
-
-	if ($DNSObject->rrFromString($_POST['new']['data']) === false)
-	{
-		$bad_parameter = true;
-		$errors[] = sprintf(_('Field %s: data is not valid for dns type %s'), 'new.data', $_POST['new']['type']);
-	}
-}
-
-var_dump($type);exit;
-
-$data = getTokenPrivate();
-$zone = Zones::getZone($URLMapper_data[1], $data, true);
-
-if( is_null($zone) )
-{
-	http_response_code(403);
-	sendJSON( array('info' => _('Forbidden'), 'detail' => _('The server is refusing action. The user might not have the necessary permissions for a resource') ));
-	return true;
-}
-
-$errors=array();
-foreach($_POST as $key => $value)
-{
-	if( $value === false )
-	{
-		if( $filter_args[$key]['filter'] == FILTER_VALIDATE_EMAIL )
-			$errors[] = sprintf(_('Field %s: must be a valid email address'), $key);
-		if( $filter_args[$key]['filter'] == FILTER_VALIDATE_INT )
-			$errors[] = sprintf(_('Field %s: must be an integer between %d and %d'), $key, $filter_args[$key]['options']['min_range'], $filter_args[$key]['options']['max_range']);
-	}
-	else
-		$soa->$key = $value;
-}
-
-if( count($errors) != 0 )
-{
-	http_response_code(400);
-	sendJSON( array('info' => _('Bad Request'), 'detail' => _('The server cannot or will not process the request due to an apparent client error'), 'errors' => $errors ) );
-	return true;
-}
-
-$soa->serial += 1;
-$soa->rname = Zones::getSOArname($soa->rname);
-
-list($ret, $msg) = $zone->setSOA($soa);
-
-if( $ret )
-{
-	$soa = $zone->getSOAObject();
-	if( is_null($soa) )
-	{
-		http_response_code(500);
-		sendJSON( array('info' => _('Internal Server Error'), 'detail' => _('The server is unable to get SOA of an updated zone') ));
-		return true;
-	}
-	sendJSON( $soa );
-	return true;
-}
-
-http_response_code(500);
-if( is_null($msg) )
-{
-	sendJSON( array('info' => _('Internal Server Error'), 'detail' => _('The server is unable to update SOA') ));
-	return true;
-}
-sendJSON( array('info' => _('Internal Server Error'), 'detail' => _('The server is unable to update SOA'), 'errors' => array($msg) ));
 return true;

@@ -18,11 +18,11 @@ $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/logout$@', PATH_BASE.'/api/logout.p
 $MAPPER->addMapping('@^@', PATH_BASE.'/api/checkAuth.php');
 
 # Authenticated page
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones$@', PATH_BASE.'/api/zones_list.php');
-#$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)$@', PATH_BASE.'/api/zones_entries.php');
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_list_entries.php', 'GET');
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/soa$@', PATH_BASE.'/api/zones_update_soa.php', 'PATCH');
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_update_entries.php', 'PATCH');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones$@', PATH_BASE.'/api/zones_01_list.php');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/soa$@', PATH_BASE.'/api/zones_02_update_soa.php', 'PATCH');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_03_entries_list.php', 'GET');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_04_entries_add.php', 'PUT');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_05_entries_update.php', 'PATCH');
 
 #$MAPPER->addMapping('@^/system/(?:users/)?(?:list)?$@', PATH_BASE.'/pages/system.users.r.php');
 #$MAPPER->addMapping('@^/system/(?:users/)?create$@', PATH_BASE.'/pages/system.users.c.php');

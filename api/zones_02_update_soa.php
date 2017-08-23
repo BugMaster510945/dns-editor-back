@@ -81,7 +81,6 @@ $filter_args = array(
 	'expire'      => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
 	'minimum'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647))
 );
-#$_POST = filter_var_array ($_POST, $filter_args, true);
 $_POST = filter_var_array_errors($_POST, $filter_args, $errors, false);
 
 if( count($errors) != 0 )

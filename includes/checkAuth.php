@@ -40,13 +40,16 @@ function clearToken()
 function getTokenFromHeader()
 {
 	$token=null;
-	$headers=getallheaders();
+	$headers=array();
+
+	foreach (getallheaders() as $k => $v)
+		$headers[strtolower($k)] = $v;
 
 	try
 	{
-		if( array_key_exists('Authorization', $headers) )
+		if( array_key_exists('authorization', $headers) )
 		{
-			$token = (new Parser())->parse((string) $headers['Authorization']);
+			$token = (new Parser())->parse((string) $headers['authorization']);
 
 			if( !is_null( $token ) )
 			{
@@ -74,6 +77,7 @@ function getTokenFromHeader()
 	catch(Exception $e)
 	{
 		$token = null;
+		throw appException(500, $e);
 	}
 	unset($headers);
 
