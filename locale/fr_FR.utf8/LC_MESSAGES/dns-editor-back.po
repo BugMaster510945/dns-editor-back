@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dns-editor-back\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-26 11:34+0200\n"
-"PO-Revision-Date: 2017-08-26 11:34+0200\n"
+"POT-Creation-Date: 2017-08-26 11:36+0200\n"
+"PO-Revision-Date: 2017-08-26 11:36+0200\n"
 "Last-Translator: Frédéric Planchon <github@planchon.org>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -46,6 +46,30 @@ msgstr "Champ %s: doit être un tableau"
 msgid "DNS Type must match between old and new entry"
 msgstr "Le type de DNS doit correspondre entre l'ancienne et la nouvelle entrée"
 
+#: includes/exception.php:54
+msgid "Bad Request"
+msgstr "Mauvaise requête"
+
+#: includes/exception.php:56
+msgid "Unauthorized"
+msgstr "Non autorisé"
+
+#: includes/exception.php:58
+msgid "Not Found"
+msgstr "Non Trouvée"
+
+#: includes/exception.php:60
+msgid "Forbidden"
+msgstr "Interdit"
+
+#: includes/exception.php:62
+msgid "Gateway Time-out"
+msgstr "Délai d'attente hors limite"
+
+#: includes/exception.php:64
+msgid "Internal Server Error"
+msgstr "Erreur Interne du Serveur"
+
 #: includes/functions.php:43
 #, php-format
 msgid "Field %s: must be a valid email address"
@@ -61,14 +85,8 @@ msgstr "Champ %s: doit être un entier compris entre %d et %d"
 msgid "Field %s: must match regex \"%s\""
 msgstr "Champ %s: doit valider l'expression régulière \"%s\""
 
-#~ msgid "Not Found"
-#~ msgstr "Non Trouvée"
-
 #~ msgid "The requested resource could not be found"
 #~ msgstr "Ressource non trouvée"
-
-#~ msgid "Unauthorized"
-#~ msgstr "Non autorisé"
 
 #~ msgid "The requested resource need credentials to be accessed"
 #~ msgstr "Une authentification est nécessaire pour accéder à la ressource"
@@ -79,20 +97,11 @@ msgstr "Champ %s: doit valider l'expression régulière \"%s\""
 #~ msgid "The request has been fulfilled, resulting in the creation of a new user's session"
 #~ msgstr "Requête traitée avec succès et création d’une session utilisateur"
 
-#~ msgid "Bad Request"
-#~ msgstr "Mauvaise requête"
-
 #~ msgid "The server cannot or will not process the request due to an apparent client error"
 #~ msgstr "La syntaxe de la requête est erronée"
 
-#~ msgid "Forbidden"
-#~ msgstr "Interdit"
-
 #~ msgid "The server is refusing action. The user might not have the necessary permissions for a resource"
 #~ msgstr "Le serveur refuse d'exécuter la requête. L'utilisateur ne dispose pas des privilèges nécessaire pour la ressource"
-
-#~ msgid "Gateway Time-out"
-#~ msgstr "Délai d'attente hors limite"
 
 #~ msgid "The server was acting as a gateway or proxy and did not receive a timely response from the upstream server"
 #~ msgstr "Le serveur agissait en tant que passerelle ou proxy et n’a pas reçu une réponse rapide du serveur en amont"
@@ -102,9 +111,6 @@ msgstr "Champ %s: doit valider l'expression régulière \"%s\""
 
 #~ msgid "Field %s: data is not valid for dns type %s"
 #~ msgstr "Champ %s: la donnée n'est pas valide pour le type dns %s"
-
-#~ msgid "Internal Server Error"
-#~ msgstr "Erreur Interne du Serveur"
 
 #~ msgid "The server is unable to get SOA of an updated zone"
 #~ msgstr "Le serveur ne peux pas récupérer la SOA d'une zone mise à jour"
