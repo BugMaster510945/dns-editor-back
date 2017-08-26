@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dns-editor-back\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-20 17:28+0200\n"
-"PO-Revision-Date: 2017-08-20 17:29+0200\n"
+"POT-Creation-Date: 2017-08-26 11:34+0200\n"
+"PO-Revision-Date: 2017-08-26 11:34+0200\n"
 "Last-Translator: Frédéric Planchon <github@planchon.org>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -16,115 +16,98 @@ msgstr ""
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: api/404.php:8
-msgid "Not Found"
-msgstr "Non Trouvée"
+#: api/zones_02_update_soa.php:67 api/zones_03_entries_list.php:49
+#, php-format
+msgid "Require %d parameter"
+msgstr "%d paramètre requis"
 
-#: api/404.php:8
-msgid "The requested resource could not be found"
-msgstr "Ressource non trouvée"
+#: api/zones_04_entries_add.php:74 api/zones_04_entries_delete.php:74
+#: api/zones_04_entries_update.php:87
+#, php-format
+msgid "Require %d parameters"
+msgstr "%d paramètres requis"
 
-#: api/checkAuth.php:11
-msgid "Unauthorized"
-msgstr "Non autorisé"
-
-#: api/checkAuth.php:11
-msgid "The requested resource need credentials to be accessed"
-msgstr "Une authentification est nécessaire pour accéder à la ressource"
-
-#: api/login.php:60
-msgid "Created"
-msgstr "Crée"
-
-#: api/login.php:60
-msgid ""
-"The request has been fulfilled, resulting in the creation of a new user's "
-"session"
-msgstr "Requête traitée avec succès et création d’une session utilisateur"
-
-#: api/zones_list_entries.php:51 api/zones_update_entries.php:119
-#: api/zones_update_entries.php:208 api/zones_update_soa.php:85
-#: api/zones_update_soa.php:144
-msgid "Bad Request"
-msgstr "Mauvaise requête"
-
-#: api/zones_list_entries.php:51 api/zones_update_entries.php:119
-#: api/zones_update_entries.php:208 api/zones_update_soa.php:85
-#: api/zones_update_soa.php:144
-msgid ""
-"The server cannot or will not process the request due to an apparent client "
-"error"
-msgstr "La syntaxe de la requête est erronée"
-
-#: api/zones_list_entries.php:61 api/zones_update_entries.php:129
-#: api/zones_update_entries.php:187 api/zones_update_soa.php:95
-msgid "Forbidden"
-msgstr "Interdit"
-
-#: api/zones_list_entries.php:61 api/zones_update_entries.php:129
-#: api/zones_update_entries.php:187 api/zones_update_soa.php:95
-msgid ""
-"The server is refusing action. The user might not have the necessary "
-"permissions for a resource"
-msgstr ""
-"Le serveur refuse d'exécuter la requête. L'utilisateur ne dispose pas des "
-"privilèges nécessaire pour la ressource"
-
-#: api/zones_update_entries.php:104 api/zones_update_entries.php:106
+#: api/zones_04_entries_add.php:87 api/zones_04_entries_add.php:89
+#: api/zones_04_entries_delete.php:87 api/zones_04_entries_delete.php:89
+#: api/zones_04_entries_update.php:98 api/zones_04_entries_update.php:106
+#: api/zones_04_entries_update.php:108 classes/Zones.php:556
+#: classes/Zones.php:558 classes/Zones.php:636 classes/Zones.php:638
+#: classes/Zones.php:686 classes/Zones.php:688
 #, php-format
 msgid "Field %s: is required"
 msgstr "Champ %s: obligatoire"
 
-#: api/zones_update_entries.php:140 api/zones_update_soa.php:103
-msgid "Gateway Time-out"
-msgstr "Délai d'attente hors limite"
-
-#: api/zones_update_entries.php:140 api/zones_update_soa.php:103
-msgid ""
-"The server was acting as a gateway or proxy and did not receive a timely "
-"response from the upstream server"
-msgstr ""
-"Le serveur agissait en tant que passerelle ou proxy et n’a pas reçu une "
-"réponse rapide du serveur en amont"
-
-#: api/zones_update_entries.php:158
+#: api/zones_04_entries_update.php:101 api/zones_04_entries_update.php:111
 #, php-format
-msgid "Field %s: %s is not a supported dns type"
-msgstr "Champ %s: %s n'est pas un type dns pris en charge"
+msgid "Field %s: must be an array"
+msgstr "Champ %s: doit être un tableau"
 
-#: api/zones_update_entries.php:175
-#, php-format
-msgid "Field %s: data is not valid for dns type %s"
-msgstr "Champ %s: la donnée n'est pas valide pour le type dns %s"
+#: classes/Zones.php:571
+msgid "DNS Type must match between old and new entry"
+msgstr "Le type de DNS doit correspondre entre l'ancienne et la nouvelle entrée"
 
-#: api/zones_update_entries.php:197 api/zones_update_soa.php:133
-#: includes/functions.php:44
+#: includes/functions.php:43
 #, php-format
 msgid "Field %s: must be a valid email address"
 msgstr "Champ %s: doit être une adresse e-mail valide"
 
-#: api/zones_update_entries.php:199 api/zones_update_soa.php:135
-#: includes/functions.php:46
+#: includes/functions.php:45
 #, php-format
 msgid "Field %s: must be an integer between %d and %d"
 msgstr "Champ %s: doit être un entier compris entre %d et %d"
 
-#: api/zones_update_entries.php:223 api/zones_update_entries.php:233
-#: api/zones_update_entries.php:236 api/zones_update_soa.php:159
-#: api/zones_update_soa.php:169 api/zones_update_soa.php:172
-msgid "Internal Server Error"
-msgstr "Erreur Interne du Serveur"
-
-#: api/zones_update_entries.php:223 api/zones_update_soa.php:159
-msgid "The server is unable to get SOA of an updated zone"
-msgstr "Le serveur ne peux pas récupérer la SOA d'une zone mise à jour"
-
-#: api/zones_update_entries.php:233 api/zones_update_entries.php:236
-#: api/zones_update_soa.php:169 api/zones_update_soa.php:172
-msgid "The server is unable to update SOA"
-msgstr "Le serveur ne peut pas mettre à jour la SOA de la zone"
-
-#: includes/functions.php:48
+#: includes/functions.php:47
 #, php-format
 msgid "Field %s: must match regex \"%s\""
 msgstr "Champ %s: doit valider l'expression régulière \"%s\""
+
+#~ msgid "Not Found"
+#~ msgstr "Non Trouvée"
+
+#~ msgid "The requested resource could not be found"
+#~ msgstr "Ressource non trouvée"
+
+#~ msgid "Unauthorized"
+#~ msgstr "Non autorisé"
+
+#~ msgid "The requested resource need credentials to be accessed"
+#~ msgstr "Une authentification est nécessaire pour accéder à la ressource"
+
+#~ msgid "Created"
+#~ msgstr "Crée"
+
+#~ msgid "The request has been fulfilled, resulting in the creation of a new user's session"
+#~ msgstr "Requête traitée avec succès et création d’une session utilisateur"
+
+#~ msgid "Bad Request"
+#~ msgstr "Mauvaise requête"
+
+#~ msgid "The server cannot or will not process the request due to an apparent client error"
+#~ msgstr "La syntaxe de la requête est erronée"
+
+#~ msgid "Forbidden"
+#~ msgstr "Interdit"
+
+#~ msgid "The server is refusing action. The user might not have the necessary permissions for a resource"
+#~ msgstr "Le serveur refuse d'exécuter la requête. L'utilisateur ne dispose pas des privilèges nécessaire pour la ressource"
+
+#~ msgid "Gateway Time-out"
+#~ msgstr "Délai d'attente hors limite"
+
+#~ msgid "The server was acting as a gateway or proxy and did not receive a timely response from the upstream server"
+#~ msgstr "Le serveur agissait en tant que passerelle ou proxy et n’a pas reçu une réponse rapide du serveur en amont"
+
+#~ msgid "Field %s: %s is not a supported dns type"
+#~ msgstr "Champ %s: %s n'est pas un type dns pris en charge"
+
+#~ msgid "Field %s: data is not valid for dns type %s"
+#~ msgstr "Champ %s: la donnée n'est pas valide pour le type dns %s"
+
+#~ msgid "Internal Server Error"
+#~ msgstr "Erreur Interne du Serveur"
+
+#~ msgid "The server is unable to get SOA of an updated zone"
+#~ msgstr "Le serveur ne peux pas récupérer la SOA d'une zone mise à jour"
+
+#~ msgid "The server is unable to update SOA"
+#~ msgstr "Le serveur ne peut pas mettre à jour la SOA de la zone"
