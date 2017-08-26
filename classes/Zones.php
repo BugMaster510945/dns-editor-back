@@ -663,4 +663,51 @@ class Zones
 			throw new appException(400, $e);
 		}
 	}
+
+	public function deleteEntry($entry, $old)
+	{
+		global $appDb;
+
+		$errors = array();
+		if( !is_array($old) )
+			throw new appException(400);
+
+		$filter_args = array(
+			'ttl'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
+			'type'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^[A-Z]+/') ),
+			'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
+		);
+		$old = filter_var_array_errors($old, $filter_args, $errors, true);
+
+		if( count($errors) != 0 )
+			throw new appException(400, $errors);
+
+		if( is_null($old['type']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
+		if( is_null($old['data']) )
+			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
+
+		$oldRR = array( Zones::expandEntry($entry, $this->name), 0 ); // Don't care about ttl when delete
+		$oldRR[] = $old['type'];
+		$oldRR[] = $old['data'];
+
+		$data = $appDb->signkeys('zones:id', $this->id)->select('host.ip as host', 'signkeys.name as name', 'algorithm.name as algorithm', 'signkeys.secret as secret');
+		$data = $data->fetch();
+
+		try
+		{
+			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
+			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
+
+			$oldRR = Net_DNS2_RR::fromString(implode($oldRR, ' '));
+			$updater->delete($oldRR);
+
+			if( !$updater->update() )
+				throw new appException(500);
+		}
+		catch(Net_DNS2_Exception $e)
+		{
+			throw new appException(400, $e);
+		}
+	}
 }
