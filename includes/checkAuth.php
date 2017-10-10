@@ -77,7 +77,7 @@ function getTokenFromHeader()
 	catch(Exception $e)
 	{
 		$token = null;
-		throw appException(500, $e);
+		throw new appException(500, $e);
 	}
 	unset($headers);
 
