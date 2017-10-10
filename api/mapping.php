@@ -18,6 +18,7 @@ $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/logout$@', PATH_BASE.'/api/logout.p
 $MAPPER->addMapping('@^@', PATH_BASE.'/api/checkAuth.php');
 
 # Authenticated page
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/record$@', PATH_BASE.'/api/record.php');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones$@', PATH_BASE.'/api/zones_01_list.php');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/soa$@', PATH_BASE.'/api/zones_02_update_soa.php', 'PATCH');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_03_entries_list.php', 'GET');
