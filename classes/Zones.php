@@ -9,6 +9,8 @@
 
 class Zones
 {
+	static protected $protectedType = array('SOA','DNSKEY','RRSIG','NSEC','NSEC3','NSEC3PARAM','TYPE65534');
+
 	protected $id;
 
 	/**
@@ -178,9 +180,10 @@ class Zones
 		return $retour;
 	}
 
-	public function getFilteredEntries($filterExclude=array('SOA','DNSKEY','RRSIG','NSEC','NSEC3','NSEC3PARAM','TYPE65534'))
+	public function getFilteredEntries($filterExclude=null)
 	{
 		$exclude = array();
+		if( is_null($filterExclude) ) $filterExclude = self::$protectedType;
 		foreach($filterExclude as $key)
 			$exclude[$key] = true;
 
@@ -205,6 +208,34 @@ class Zones
 	 *     description="entry name",
 	 *     type="string",
 	 *     readOnly=true
+	 *   ),
+	 *   @SWG\Property(
+	 *     property="ttl",
+	 *     description="entry ttl",
+	 *     type="integer",
+	 *     format="int32"
+	 *   ),
+	 *   @SWG\Property(
+	 *     property="type",
+	 *     description="entry type",
+	 *     type="string"
+	 *   ),
+	 *   @SWG\Property(
+	 *     property="data",
+	 *     description="entry data",
+	 *     type="string"
+	 *   )
+	 * )
+	 */
+
+	/**
+	 * @SWG\Definition(
+	 *   definition="zoneEntryAll",
+	 *   type="object",
+	 *   @SWG\Property(
+	 *     property="name",
+	 *     description="entry name",
+	 *     type="string"
 	 *   ),
 	 *   @SWG\Property(
 	 *     property="ttl",
@@ -360,9 +391,10 @@ class Zones
 		return $retour;
 	}
 
-	public function getZoneEntriesObject($filterExclude=array('SOA','DNSKEY','RRSIG','NSEC','NSEC3','NSEC3PARAM','TYPE65534'))
+	public function getZoneEntriesObject($filterExclude=null)
 	{
 		$exclude = array();
+		if( is_null($filterExclude) ) $filterExclude = self::$protectedType;
 		foreach($filterExclude as $key)
 			$exclude[$key] = true;
 
@@ -534,7 +566,7 @@ class Zones
 		return $soa->minimum;
 	}
 
-	public function updateEntry($entry, $new, $old = null)
+	public function updateEntry($new, $old = null)
 	{
 		global $appDb;
 
@@ -543,34 +575,50 @@ class Zones
 			throw new appException(400);
 
 		$filter_args = array(
+			'name'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') ),
 			'ttl'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
 			'type'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^[A-Z]+/') ),
 			'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
 		);
 		$new = filter_var_array_errors($new, $filter_args, $errors, true);
 
+		foreach(array('name', 'type', 'data') as $key)
+			if( !array_key_exists($key, $new) ||
+				is_null($new[$key]) ||
+				trim($new[$key]) == ""
+			)
+				$errors[] = sprintf(_('Field %s: is required'), $key);
+
 		if( count($errors) != 0 )
 			throw new appException(400, $errors);
 
-		if( is_null($new['type']) )
-			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
-		if( is_null($new['data']) )
-			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
-
 		if( is_null($old) )
-			$old = array();
+			$old = array('name'=>$new['name']);
 		if( !is_array($old) )
 			throw new appException(400);
 
 		$old = filter_var_array_errors($old, $filter_args, $errors, false);
+		if( !array_key_exists('name', $old) )
+			$errors[] = sprintf(_('Field %s: is required'), 'name');
+
 		if( count($errors) != 0 )
 			throw new appException(400, $errors);
 
-		if( array_key_exists('type', $old) &&
+		/*if( array_key_exists('type', $old) &&
 		    $old['type'] != $new['type'] )
 			throw new appException(400, array( _('DNS Type must match between old and new entry')) );
+		*/
 
-		$newRR = array( Zones::expandEntry($entry, $this->name) );
+		if( in_array(strtoupper($new['type']), self::$protectedType) )
+			throw new appException(403, array( sprintf(_('Wrong call to update %s'), strtoupper($new['type']))) );
+
+		if( array_key_exists('type', $old) && in_array(strtoupper($old['type']), self::$protectedType) )
+			throw new appException(403, array( sprintf(_('Wrong call to update %s'), strtoupper($old['type']))) );
+
+		if( ($old['name'] == '@') && !array_key_exists('type', $old) )
+			throw new appException(400, array( sprintf(_('Type required to update root zone')) ) );
+
+		$newRR = array( Zones::expandEntry($new['name'], $this->name) );
 		if( is_null($new['ttl']) )
 			$newRR[] = $this->getDefaultTTL();
 		else
@@ -586,7 +634,7 @@ class Zones
 			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
 			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
 
-			$oldRR = array($newRR[0], 0); // Don't care about ttl when delete
+			$oldRR = array( Zones::expandEntry($old['name'], $this->name), 0 ); // Don't care about ttl when delete
 			if( array_key_exists('type', $old) )
 			{
 				$oldRR[] = $old['type'];
@@ -614,6 +662,15 @@ class Zones
 		}
 	}
 
+	public function updateEntrySimple($entry, $new, $old = null)
+	{
+		$new['name'] = $entry;
+		if( is_array($old) )
+			$old['name'] = $entry;
+
+		return $this->updateEntry($new, $old);
+	}
+
 	public function addEntry($entry, $new)
 	{
 		global $appDb;
@@ -636,6 +693,9 @@ class Zones
 			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
 		if( is_null($new['data']) )
 			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
+
+		if( in_array(strtoupper($new['type']), self::$protectedType) )
+			throw new appException(403, array( sprintf(_('Wrong call to add %s'), strtoupper($new['type']))) );
 
 		$newRR = array( Zones::expandEntry($entry, $this->name) );
 		if( is_null($new['ttl']) )
@@ -686,6 +746,9 @@ class Zones
 			throw new appException(400, array( sprintf(_('Field %s: is required'), 'type')) );
 		if( is_null($old['data']) )
 			throw new appException(400, array( sprintf(_('Field %s: is required'), 'data')) );
+
+		if( in_array(strtoupper($old['type']), self::$protectedType ) )
+			throw new appException(403, array( sprintf(_('Wrong call to delete %s'), strtoupper($old['type']))) );
 
 		$oldRR = array( Zones::expandEntry($entry, $this->name), 0 ); // Don't care about ttl when delete
 		$oldRR[] = $old['type'];

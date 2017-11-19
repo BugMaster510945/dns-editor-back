@@ -23,7 +23,8 @@ $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones$@', PATH_BASE.'/api/zones_01_
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/soa$@', PATH_BASE.'/api/zones_02_update_soa.php', 'PATCH');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries$@', PATH_BASE.'/api/zones_03_entries_list.php', 'GET');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_04_entries_add.php', 'PUT');
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_04_entries_update.php', 'PATCH');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/$@', PATH_BASE.'/api/zones_04_entries_update.php', 'PATCH');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_04_entry_update.php', 'PATCH');
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/zones/([^/]+)/entries/([^/]+)$@', PATH_BASE.'/api/zones_04_entries_delete.php', 'DELETE');
 
 #$MAPPER->addMapping('@^/system/(?:users/)?(?:list)?$@', PATH_BASE.'/pages/system.users.r.php');

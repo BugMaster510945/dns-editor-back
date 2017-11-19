@@ -2,7 +2,7 @@
 
 /**
  * @SWG\Patch(
- *   path="/zones/{name}/entries/{entry}",
+ *   path="/zones/{name}/entries/",
  *   summary="Update an entry record",
  *   tags={ "zones" },
  *   security={{"token":{}}},
@@ -14,13 +14,6 @@
  *     description="zone name"
  *   ),
  *   @SWG\Parameter(
- *     name="entry",
- *     in="path",
- *     required=true,
- *     type="string",
- *     description="entry name"
- *   ),
- *   @SWG\Parameter(
  *     name="body",
  *     in="body",
  *     required=true,
@@ -29,13 +22,13 @@
  *       @SWG\Property(
  *         property="old",
  *         description="Old value to replace, if none, all entry will be replaced",
- *         ref="#/definitions/zoneEntry",
+ *         ref="#/definitions/zoneEntryAll",
  *       ),
  *       @SWG\Property(
  *         property="new",
  *         required={"type", "data"},
  *         description="New value to set",
- *         ref="#/definitions/zoneEntry",
+ *         ref="#/definitions/zoneEntryAll",
  *       ),
  *     ),
  *   ),
@@ -83,12 +76,13 @@
 
 $bad_parameter = false;
 $errors = array();
-if( count($URLMapper_data) != 3 )
-	throw new appException(400, array( sprintf(_('Require %d parameters', 2)) ) );
+if( count($URLMapper_data) != 2 )
+	throw new appException(400, array( sprintf(_('Require %d parameters'), 1)) );
 
 getPOST();
 
 $filter_args = array(
+	'name'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') ),
 	'ttl'     => array('filter' => FILTER_VALIDATE_INT, 'options' => array('min_range' => 1, 'max_range' => 2147483647)),
 	'type'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^[A-Z]+/') ),
 	'data'    => array('filter' => FILTER_VALIDATE_REGEXP, 'options' => array('regexp' => '/^.+/') )
@@ -102,10 +96,9 @@ if( !is_array($_POST['new']) )
 
 $_POST['new'] = filter_var_array_errors($_POST['new'], $filter_args, $errors, false, 'new.');
 
-if( !array_key_exists('type', $_POST['new']) )
-	$errors[] = sprintf(_('Field %s: is required'), 'new.type');
-if( !array_key_exists('data', $_POST['new']) )
-	$errors[] = sprintf(_('Field %s: is required'), 'new.data');
+foreach( array('name', 'type', 'data') as $key)
+	if( !array_key_exists($key, $_POST['new']) )
+		$errors[] = sprintf(_('Field %s: is required'), 'new.'.$key);
 
 if( array_key_exists('old', $_POST) && !is_array($_POST['old']) )
 	throw new appException(400, array( sprintf(_('Field %s: must be an array', 'old')) ) );
@@ -124,7 +117,7 @@ $zone = Zones::getZone($URLMapper_data[1], $data, true);
 if( is_null($zone) )
 	throw new appException(403);
 
-$zone->updateEntry($URLMapper_data[2], $_POST['new'], $_POST['old'] );
+$zone->updateEntry($_POST['new'], $_POST['old'] );
 
 header(204);
 

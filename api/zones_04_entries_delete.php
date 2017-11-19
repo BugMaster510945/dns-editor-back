@@ -83,10 +83,9 @@ $filter_args = array(
 
 $_POST = filter_var_array_errors($_POST, $filter_args, $errors, false);
 
-if( !array_key_exists('type', $_POST) )
-	$errors[] = sprintf(_('Field %s: is required'), 'type');
-if( !array_key_exists('data', $_POST) )
-	$errors[] = sprintf(_('Field %s: is required'), 'data');
+foreach(array('type', 'data') as $key)
+	if( !array_key_exists($key, $_POST) )
+		$errors[] = sprintf(_('Field %s: is required'), $key);
 
 if( count($errors) != 0 )
 	throw new appException(400, $errors);
