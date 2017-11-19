@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dns-editor-back\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-26 11:36+0200\n"
-"PO-Revision-Date: 2017-08-26 11:36+0200\n"
+"POT-Creation-Date: 2017-11-19 19:21+0100\n"
+"PO-Revision-Date: 2017-11-19 19:21+0100\n"
 "Last-Translator: Frédéric Planchon <github@planchon.org>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -22,29 +22,44 @@ msgid "Require %d parameter"
 msgstr "%d paramètre requis"
 
 #: api/zones_04_entries_add.php:74 api/zones_04_entries_delete.php:74
-#: api/zones_04_entries_update.php:87
+#: api/zones_04_entries_update.php:80
 #, php-format
 msgid "Require %d parameters"
 msgstr "%d paramètres requis"
 
 #: api/zones_04_entries_add.php:87 api/zones_04_entries_add.php:89
-#: api/zones_04_entries_delete.php:87 api/zones_04_entries_delete.php:89
-#: api/zones_04_entries_update.php:98 api/zones_04_entries_update.php:106
-#: api/zones_04_entries_update.php:108 classes/Zones.php:556
-#: classes/Zones.php:558 classes/Zones.php:636 classes/Zones.php:638
-#: classes/Zones.php:686 classes/Zones.php:688
+#: api/zones_04_entries_delete.php:88 api/zones_04_entries_update.php:92
+#: api/zones_04_entries_update.php:101 classes/Zones.php:590
+#: classes/Zones.php:602 classes/Zones.php:693 classes/Zones.php:695
+#: classes/Zones.php:746 classes/Zones.php:748
 #, php-format
 msgid "Field %s: is required"
 msgstr "Champ %s: obligatoire"
 
-#: api/zones_04_entries_update.php:101 api/zones_04_entries_update.php:111
+#: api/zones_04_entries_update.php:95 api/zones_04_entries_update.php:104
 #, php-format
 msgid "Field %s: must be an array"
 msgstr "Champ %s: doit être un tableau"
 
-#: classes/Zones.php:571
-msgid "DNS Type must match between old and new entry"
-msgstr "Le type de DNS doit correspondre entre l'ancienne et la nouvelle entrée"
+#: classes/Zones.php:613 classes/Zones.php:616
+#, php-format
+msgid "Wrong call to update %s"
+msgstr "Mauvais appel pour mettre à jour %s"
+
+#: classes/Zones.php:619
+#, php-format
+msgid "Type required to update root zone"
+msgstr "Type requis pour mettre à jour la racine de la zone"
+
+#: classes/Zones.php:698
+#, php-format
+msgid "Wrong call to add %s"
+msgstr "Mauvais appel pour pour ajouter %s"
+
+#: classes/Zones.php:751
+#, php-format
+msgid "Wrong call to delete %s"
+msgstr "Mauvais appel pour supprimer %s"
 
 #: includes/exception.php:54
 msgid "Bad Request"
@@ -84,6 +99,9 @@ msgstr "Champ %s: doit être un entier compris entre %d et %d"
 #, php-format
 msgid "Field %s: must match regex \"%s\""
 msgstr "Champ %s: doit valider l'expression régulière \"%s\""
+
+#~ msgid "DNS Type must match between old and new entry"
+#~ msgstr "Le type de DNS doit correspondre entre l'ancienne et la nouvelle entrée"
 
 #~ msgid "The requested resource could not be found"
 #~ msgstr "Ressource non trouvée"
