@@ -1,0 +1,13 @@
+<?php
+
+#define('DEBUG', true);
+define('JWT_ID', 'xxxxx');
+define('JWT_SECRET', 'xxxxx');
+define('JWT_SESSION_LIFETIME', 300);
+define('CACHE_DIR',   '/file/path');
+# Optionnel define('SENTRY_URL', '');
+
+$appDbPDOConnection = 'mysql:host=localhost;charset=utf8;dbname=dns';
+$appDbUser = 'dns';
+$appDbPassword = 'xxxx';
+
