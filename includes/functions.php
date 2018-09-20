@@ -1,4 +1,4 @@
-<?
+<?php
 
 function guidv4()
 {
