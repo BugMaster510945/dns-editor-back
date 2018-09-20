@@ -175,6 +175,7 @@ class Zones
 			$retour = $resolv->query($this->name, 'AXFR');
 			$retour = $retour->answer;
 		} catch(Net_DNS2_Exception $e) {
+			throw new AppException(502, $e);
 		}
 
 		return $retour;
