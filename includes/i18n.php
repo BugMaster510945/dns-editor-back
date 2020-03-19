@@ -1,5 +1,7 @@
 <?php
-	$locale = locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	$locale = $appDefaultLanguage
+	if( array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER) )
+		$locale = locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 	if( !array_key_exists($locale, $appSupportedLanguages) )
 		$locale = $appDefaultLanguage;
 	$locale = $appSupportedLanguages[$locale]['code'];
