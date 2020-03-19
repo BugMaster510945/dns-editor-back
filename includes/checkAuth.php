@@ -49,28 +49,32 @@ function getTokenFromHeader()
 	{
 		if( array_key_exists('authorization', $headers) )
 		{
-			$token = (new Parser())->parse((string) $headers['authorization']);
-
-			if( !is_null( $token ) )
+			$headerTab = explode(" ", $headers['authorization'], 2);
+			if( count($headerTab) == 2 && $headerTab[0] == "Bearer" )
 			{
-				$data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-				$data->setIssuer(JWT_ISSUER);
-				$data->setAudience(JWT_AUDIENCE);
-				$data->setId(JWT_ID);
+				$token = (new Parser())->parse((string) $headerTab[1]);
 
-				if( !$token->validate($data) )
-					$token = null;
+				if( !is_null( $token ) )
+				{
+					$data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+					$data->setIssuer(JWT_ISSUER);
+					$data->setAudience(JWT_AUDIENCE);
+					$data->setId(JWT_ID);
 
-				unset($data);
-			}
+					if( !$token->validate($data) )
+						$token = null;
 
-			if( !is_null( $token ) )
-			{
-				$signer = new Sha256();
+					unset($data);
+				}
 
-				if( ! $token->verify($signer, JWT_SECRET) )
-					$token = null;
-				unset($signer);
+				if( !is_null( $token ) )
+				{
+					$signer = new Sha256();
+
+					if( ! $token->verify($signer, JWT_SECRET) )
+						$token = null;
+					unset($signer);
+				}
 			}
 		}
 	}
