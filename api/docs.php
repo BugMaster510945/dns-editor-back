@@ -38,11 +38,17 @@ unset($url);
 
 $doCache = defined('CACHE_DIR') && is_dir(CACHE_DIR);
 
-$stack = array( PATH_BASE );
-$exclude = array('vendor', 'old', 'dns-editor-front', 'named-zone', 'netdns2');
+$exclude = array();
+$includeDirectory = array('api', 'classes', 'includes');
+$stack = array();
 
 $files = array();
 $last_modif = 0;
+
+foreach ($includeDirectory as $entry)
+{
+	$stack[] = PATH_BASE.DIRECTORY_SEPARATOR.$entry;
+}
 
 while( count($stack) > 0 )
 {
@@ -71,9 +77,9 @@ while( count($stack) > 0 )
 
 			$files[] = $fullpath;
 			$last_modif = max($last_modif, @filemtime($fullpath));
-        }
+		}
 		closedir($dh);
-    }
+	}
 }
 
 $swagger = null;
