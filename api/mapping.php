@@ -13,8 +13,8 @@ define('URL_API_BASE_PATH', URL_PATH_BASE.'api/v'.explode('.', VERSION)[0]);
 $MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/docs.json$@', PATH_BASE.'/api/docs.php');
 
 # Managing Session & Credential
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/login$@', PATH_BASE.'/api/login.php', 'POST');
-$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/logout$@', PATH_BASE.'/api/logout.php');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/login$@', PATH_BASE.'/api/users_login.php', 'POST');
+$MAPPER->addMapping('@^'.URL_API_BASE_PATH.'/logout$@', PATH_BASE.'/api/users_logout.php');
 $MAPPER->addMapping('@^@', PATH_BASE.'/api/checkAuth.php');
 
 # Authenticated page
