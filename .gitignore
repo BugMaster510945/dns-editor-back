@@ -1,1 +1,4 @@
-composer.lock
+conf.php
+www/*
+!www/index.php
+vendor
