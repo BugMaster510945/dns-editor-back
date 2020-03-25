@@ -9,25 +9,39 @@
     "require": {
         "lcobucci/jwt": "^3.2",
         "vrana/notorm": "dev-master",
-        "bugmaster510945/netdns2": "dev-master",
+        "bugmaster510945/netdns2": "^1.4.3.1",
         "zircote/swagger-php": "^2.0",
         "sentry/sentry": "^1.7"
     },
-	"repositories": [
-	{
-		"type":"package",
-		"package": {
-			"name": "bugmaster510945/netdns2",
-			"version":"master",
-			"source": {
-				"url": "https://github.com/BugMaster510945/netdns2.git",
-				"type": "git",
-				"reference":"myprod"
-			},
-			"autoload": {
-				"psr-0": { "Net_DNS2": "" }
-			}
-		}
-	}
-	]
+    "repositories": [
+        {
+            "type":"package",
+            "package": {
+                "name": "bugmaster510945/netdns2",
+                "version":"1.4.3.1",
+                "dist": {
+                    "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.3.1.zip",
+                    "type": "zip"
+                },
+                "autoload": {
+                    "psr-0": { "Net_DNS2": "" }
+                }
+            }
+        },
+        {
+            "type":"package",
+            "package": {
+                "name": "bugmaster510945/netdns2",
+                "version":"master",
+                "source": {
+                    "url": "https://github.com/BugMaster510945/netdns2.git",
+                    "type": "git",
+                    "reference":"myprod"
+                },
+                "autoload": {
+                    "psr-0": { "Net_DNS2": "" }
+                }
+            }
+        }
+    ]
 }

@@ -4,23 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26b11a1903b4b641151aae4d7840e5e5",
+    "content-hash": "a500aeea29e3cdc296883f0a55f6ca0a",
     "packages": [
         {
             "name": "bugmaster510945/netdns2",
-            "version": "master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BugMaster510945/netdns2.git",
-                "reference": "myprod"
+            "version": "1.4.3.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.3.1.zip"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
                     "Net_DNS2": ""
                 }
-            },
-            "time": "2017-08-05T19:40:53+00:00"
+            }
         },
         {
             "name": "doctrine/annotations",
@@ -440,8 +438,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "vrana/notorm": 20,
-        "bugmaster510945/netdns2": 20
+        "vrana/notorm": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
