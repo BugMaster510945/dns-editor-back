@@ -9,7 +9,7 @@
     "require": {
         "lcobucci/jwt": "^3.2",
         "vrana/notorm": "dev-master",
-        "bugmaster510945/netdns2": "^1.4.3.1",
+        "bugmaster510945/netdns2": "^1.4.4.1",
         "zircote/swagger-php": "^2.0",
         "sentry/sentry": "^1.7"
     },
@@ -18,9 +18,9 @@
             "type":"package",
             "package": {
                 "name": "bugmaster510945/netdns2",
-                "version":"1.4.3.1",
+                "version":"1.4.4.1",
                 "dist": {
-                    "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.3.1.zip",
+                    "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.4.1.zip",
                     "type": "zip"
                 },
                 "autoload": {

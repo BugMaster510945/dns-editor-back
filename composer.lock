@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a500aeea29e3cdc296883f0a55f6ca0a",
+    "content-hash": "4d0268f2808b645be4b1f73876fe3f16",
     "packages": [
         {
             "name": "bugmaster510945/netdns2",
-            "version": "1.4.3.1",
+            "version": "1.4.4.1",
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.3.1.zip"
+                "url": "https://github.com/BugMaster510945/netdns2/archive/v1.4.4.1.zip"
             },
             "type": "library",
             "autoload": {
