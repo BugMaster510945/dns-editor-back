@@ -4,7 +4,7 @@
  * @SWG\Get(
  *   path="/logout",
  *   summary="Logout user from the system",
- *   tags={ "users" },
+ *   tags={ "auth" },
  *   security={{"token":{}}},
  *   @SWG\Response(
  *     response=204,

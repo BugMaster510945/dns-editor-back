@@ -4,7 +4,7 @@
  * @SWG\Post(
  *   path="/login",
  *   summary="Logs user into the system",
- *   tags={ "users" },
+ *   tags={ "auth" },
  *   @SWG\Parameter(
  *     name="body",
  *     in="body",
