@@ -1,95 +1,57 @@
 <?php
 
-class OTPUsers
+/**
+ * @SWG\Definition(
+ *   definition="user",
+ *   type="object"
+ * )
+ */
+class Users implements \JsonSerializable
 {
-	public static function getCredentials($user, $url, $method, $count=1, $expire=null)
-	{
-		global $appDb;
+	protected $id;
 
-		if( $count <= 0 )
-			return array(null, null);
+	/**
+	 * @SWG\Property(
+	 *   type="string",
+	 *   readOnly=true,
+	 *   description="User login"
+	 * )
+	 */
+	protected $login;
 
-		if( is_null($expire) )
-			$expire = time() +  OTP_CREDENTIALS_DURATION;
+	/**
+	 * @SWG\Property(
+	 *   type="string",
+	 *   description="User password"
+	 * )
+	 */
+	protected $password;
 
-		if( $expire <= time() )
-			return array(null, null);
+	/**
+	 * @SWG\Property(
+	 *   type="string",
+	 *   description="User name"
+	 * )
+	 */
+	protected $name;
 
-		$expireObject = new DateTime();
-		$expireObject->setTimestamp($expire);
+	/**
+	 * @SWG\Property(
+	 *   type="string",
+	 *   description="User email"
+	 * )
+	 */
+	protected $email;
 
-		$login = strtr(base64_encode(openssl_random_pseudo_bytes(30)), '+/', '-_');
-		$password = strtr(base64_encode(openssl_random_pseudo_bytes(30)), '+/', '-_');
+	/**
+	 * @SWG\Property(
+	 *   type="boolean",
+	 *   description="Administaor"
+	 * )
+	 */
+	protected $is_admin;
 
-		$data = $appDb->otpaction->insert( array(
-			'login'    => $login,
-			'password' => $password,
-			'url'      => $url,
-			'method'   => $method,
-			'count'    => $count,
-			'expire'   => $expireObject,
-			'users_id' => $user->getId()
-		) );
-
-		if( $data !== false )
-			return array($login, $password);
-
-		return array(null, null);
-	}
-
-	public static function login($login, $password, $url, $method)
-	{
-		global $appDb;
-
-		$row = $appDb->otpaction
-			->where('login',  $login)
-			->and('password', $password)
-			->and('url',      $url)
-			->and('method',   $method);
-		$data = $row->fetch();
-
-		if( $data === false )
-			return null;
-
-		$expire = new DateTime($data['expire']);
-		if( $expire <= new DateTime() )
-		{
-			$data->delete();
-			return null;
-		}
-		
-		$cpt = $data['count'];
-		if( $cpt <= 0 )
-		{
-			$data->delete();
-			return null;
-		}
-
-		$user = Users::getUser($data['users_id']);
-
-		$cpt = $cpt -1;
-		if( $cpt <= 0 )
-			$data->delete();
-		else
-			$data->update(array('count' => $cpt));
-
-		return $user;
-	}
-
-	public static function purgeExpiredCredentials()
-	{
-		global $appDb;
-
-		$row = $appDb->otpaction
-			->where('expire <= ?',  new NotORM_Literal("NOW()"))
-			->delete();
-	}
-}
-
-class Users
-{
-	private $id = null;
-	private $data = null;
+	//private $data = null;
 
 	public static function login($login, $password)
 	{
@@ -123,30 +85,28 @@ class Users
 		return null;
 	}
 
-	public static function getUserByApiKey($api_key)
+	private function loadFromArray($data)
 	{
-		$ret = new Users();
-
-		if( $ret->load(null, null, $api_key) )
-			return $ret;
-
-		return null;
+		$this->id = +$data['id'];
+		$this->login = $data['login'];
+		$this->password = $data['password'];
+		$this->name = $data['name'];
+		$this->email = $data['email'];
+		$this->is_admin = (bool) $data['is_admin'];
 	}
 
-	public function load($id=null, $login=null, $api_key=null)
+	public function load($id=null, $login=null)
 	{
 		global $appDb;
 
-		if( is_null($id) && is_null($login) && is_null($api_key) )
+		if( is_null($id) && is_null($login) )
 			return false;
 
-		$this->id = null;
-		$this->data = null;
+		$data = null;
 
 		if( !is_null($id) )
 		{
 			$data = $appDb->users[$id];
-			$this->data = $data;
 		}
 		else
 		{
@@ -159,10 +119,10 @@ class Users
 				$this->data = $data->fetch();
 		}
 
-		if( is_null($this->data) )
+		if( is_null($data) )
 			return false;
 
-		$this->id = +$this->data['id'];
+		$this->loadFromArray($data);
 
 		return true;
 	}
@@ -211,36 +171,15 @@ class Users
 
 	public function checkPassword($password)
 	{
-		if( is_null($this->data) )
-			return false;
-
-		if( password_verify($password, $this->data['password']) )
+		if( password_verify($password, $this->password) )
 		{
-			if( password_needs_rehash($this->data['password'], PASSWORD_DEFAULT) )
+			if( password_needs_rehash($this->password, PASSWORD_DEFAULT) )
 			{
 				$this->setPassword($password);
 			}
 			return true;
 		}
 		return false;
-	}
-
-	public function getData()
-	{
-		$ret = $this->data->jsonSerialize();
-		unset( $ret['password'] );
-		$ret['id'] = +$ret['id'];
-		$ret['is_admin'] = (bool) $ret['is_admin'];
-		return $ret;
-	}
-	public function getDataWithCounter()
-	{
-		$ret = $this->data->jsonSerialize();
-		unset( $ret['password'] );
-		$ret['id'] = +$ret['id'];
-		$ret['is_admin'] = (bool) $ret['is_admin'];
-
-		return $ret;
 	}
 
 	public function setBulk($values)
@@ -250,7 +189,7 @@ class Users
 		{
 			global $appDb;
 
-			$this->data = $appDb->users[$this->id];
+			$this->loadFromArray($appDb->users[$this->id]);
 		}
 		return $ret !== false;
 	}
@@ -264,8 +203,7 @@ class Users
 		foreach( $appDb->users->order('login') as $id => $user)
 		{
 			$tmp = new Users();
-			$tmp->data = $user;
-			$tmp->id = +$id;
+			$tmp->loadFromArray($user);
 
 			$ret[] = $tmp;
 		}
@@ -280,18 +218,12 @@ class Users
 
 	public function isAdmin()
 	{
-		return (bool) $this->data['is_admin'];
-	}
-
-	public function getTheme()
-	{
-		$ret = $this->data['theme'];
-		return getRealTheme($ret);
+		return $this->is_admin;
 	}
 
 	public function getEmail()
 	{
-		return $this->data['email'];
+		return $this->email;
 	}
 
 	public function __sleep()
@@ -308,7 +240,7 @@ class Users
 			$data = $appDb->users[$this->id];
 
 			if( !is_null($data) )
-				$this->data = $data;
+				$this->loadFromArray($data);
 			else
 				$this->id = null;
 		}
@@ -317,5 +249,15 @@ class Users
 	public function isValid()
 	{
 		return !is_null($this->id);
+	}
+
+	public function jsonSerialize()
+	{
+		return array(
+			'login'    => $this->login,
+			'name'     => $this->name,
+			'email'    => $this->email,
+			'is_admin' => $this->is_admin,
+		);
 	}
 }

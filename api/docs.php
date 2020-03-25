@@ -22,6 +22,12 @@
  *     type="apiKey",
  *     name="Authorization",
  *     in="header"
+ *   ),
+ *   @SWG\SecurityScheme(
+ *     securityDefinition="admin_token",
+ *     type="apiKey",
+ *     name="Authorization",
+ *     in="header"
  *   )
  * )
  */
