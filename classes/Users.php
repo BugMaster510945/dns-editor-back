@@ -51,7 +51,7 @@ class Users implements \JsonSerializable
 	 */
 	protected $is_admin;
 
-	//private $data = null;
+	private $db = null;
 
 	public static function login($login, $password)
 	{
@@ -102,6 +102,7 @@ class Users implements \JsonSerializable
 		if( is_null($id) && is_null($login) )
 			return false;
 
+		$this->db = null;
 		$data = null;
 
 		if( !is_null($id) )
@@ -116,12 +117,13 @@ class Users implements \JsonSerializable
 				$data = $appDb->users('api_key', $api_key);
 
 			if( count($data) == 1 )
-				$this->data = $data->fetch();
+				$data = $data->fetch();
 		}
 
 		if( is_null($data) )
 			return false;
 
+		$this->db = $data;
 		$this->loadFromArray($data);
 
 		return true;
@@ -151,9 +153,9 @@ class Users implements \JsonSerializable
 		$saveObject = $userObject;
 		unset($userObject);
 
-		$data = $saveObject->data->delete();
+		$cpt = $saveObject->db->delete();
 
-		return $data === 1;
+		return $cpt === 1;
 	}
 
 	public function changeLogin($newLogin)
@@ -171,6 +173,9 @@ class Users implements \JsonSerializable
 
 	public function checkPassword($password)
 	{
+ob_start();
+var_dump($this);
+error_log(ob_get_clean(), 0);
 		if( password_verify($password, $this->password) )
 		{
 			if( password_needs_rehash($this->password, PASSWORD_DEFAULT) )
@@ -184,7 +189,7 @@ class Users implements \JsonSerializable
 
 	public function setBulk($values)
 	{
-		$ret = $this->data->update($values);
+		$ret = $this->db->update($values);
 		if( $ret !== false && $ret >= 1)
 		{
 			global $appDb;
@@ -203,6 +208,7 @@ class Users implements \JsonSerializable
 		foreach( $appDb->users->order('login') as $id => $user)
 		{
 			$tmp = new Users();
+			$tmp->db = $user;
 			$tmp->loadFromArray($user);
 
 			$ret[] = $tmp;
@@ -240,7 +246,10 @@ class Users implements \JsonSerializable
 			$data = $appDb->users[$this->id];
 
 			if( !is_null($data) )
+			{
+				$this->db = $data;
 				$this->loadFromArray($data);
+			}
 			else
 				$this->id = null;
 		}
