@@ -173,9 +173,6 @@ class Users implements \JsonSerializable
 
 	public function checkPassword($password)
 	{
-ob_start();
-var_dump($this);
-error_log(ob_get_clean(), 0);
 		if( password_verify($password, $this->password) )
 		{
 			if( password_needs_rehash($this->password, PASSWORD_DEFAULT) )
