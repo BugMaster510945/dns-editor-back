@@ -9,7 +9,7 @@ function getNewToken($private=null, $issuedAt=null)
 {
 	$now = time();
 
-	if( is_null($issuedAt) )
+	//if( is_null($issuedAt) )
 		$issuedAt = $now;
 
 	$signer = new Sha256();
