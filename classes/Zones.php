@@ -643,7 +643,7 @@ class Zones
 				{
 					$oldRR[] = $old['data'];
 
-					$oldRR = Net_DNS2_RR::fromString(implode($oldRR, ' '));
+					$oldRR = Net_DNS2_RR::fromString(implode(' ', $oldRR));
 					$updater->delete($oldRR);
 				}
 				else
@@ -652,7 +652,7 @@ class Zones
 			else
 				$updater->deleteAll($oldRR[0]);
 
-			$newRR = Net_DNS2_RR::fromString(implode($newRR, ' '));
+			$newRR = Net_DNS2_RR::fromString(implode(' ', $newRR));
 			$updater->add( $newRR );
 			if( !$updater->update() )
 				throw new appException(500);
@@ -714,7 +714,7 @@ class Zones
 			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
 			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
 
-			$newRR = Net_DNS2_RR::fromString(implode($newRR, ' '));
+			$newRR = Net_DNS2_RR::fromString(implode(' ', $newRR));
 			$updater->add( $newRR );
 			if( !$updater->update() )
 				throw new appException(500);
@@ -763,7 +763,7 @@ class Zones
 			$updater = new Net_DNS2_Updater($this->name, array('nameservers' => array($data['host'])));
 			$updater->signTSIG($data['name'], $data['secret'], $data['algorithm']);
 
-			$oldRR = Net_DNS2_RR::fromString(implode($oldRR, ' '));
+			$oldRR = Net_DNS2_RR::fromString(implode(' ', $oldRR));
 			$updater->delete($oldRR);
 
 			if( !$updater->update() )
